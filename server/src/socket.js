@@ -4,7 +4,7 @@ import { joinUser, leaveUser, getRoomUsers } from "./utils/users.js";
 
 export default function createSocketServer(httpServer, corsOrigin) {
   const io = new Server(httpServer, {
-    cors: { origin: corsOrigin, methods: ["GET", "POST"] }
+    cors: { origin: corsOrigin, methods: ["GET", "POST"] },
   });
 
   io.on("connection", (socket) => {
@@ -27,10 +27,10 @@ export default function createSocketServer(httpServer, corsOrigin) {
         room,
         senderName: "System",
         text: `${username} joined`,
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
       });
 
-      // Load last 50 messages
+      // Load last 50 messages and send to this client
       const messages = await Message.find({ room }).sort({ createdAt: 1 }).limit(50);
       socket.emit("loadHistory", messages);
     });
@@ -58,7 +58,7 @@ export default function createSocketServer(httpServer, corsOrigin) {
           room,
           senderName: "System",
           text: `${username} left`,
-          createdAt: new Date().toISOString()
+          createdAt: new Date().toISOString(),
         });
       }
     });

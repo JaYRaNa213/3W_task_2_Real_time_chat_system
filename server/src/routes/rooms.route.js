@@ -30,19 +30,19 @@ router.post("/", async (req, res) => {
 });
 
 
-router.post("/", async (req, res) => {
-  try {
-    const { room, text, senderName } = req.body;
-    if (!room?.trim() || !text?.trim() || !senderName?.trim()) {
-      return res.status(400).json({ error: "room, text, senderName are required" });
-    }
+// router.post("/", async (req, res) => {
+//   try {
+//     const { room, text, senderName } = req.body;
+//     if (!room?.trim() || !text?.trim() || !senderName?.trim()) {
+//       return res.status(400).json({ error: "room, text, senderName are required" });
+//     }
 
-    const message = await Message.create({ room, text: text.trim(), senderName: senderName.trim() });
-    res.status(201).json(message);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
+//     const message = await Message.create({ room, text: text.trim(), senderName: senderName.trim() });
+//     res.status(201).json(message);
+//   } catch (err) {
+//     res.status(500).json({ error: err.message });
+//   }
+// });
 
 
 

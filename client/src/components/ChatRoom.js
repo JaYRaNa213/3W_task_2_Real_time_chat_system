@@ -13,7 +13,8 @@ export default function ChatRoom({ me, room }) {
 
   useEffect(() => {
     async function loadHistory() {
-      const { data } = await api.get(`/api/rooms/${room}/messages?limit=50`);
+      const { data } = await api.get(`/api/messages/${room}?limit=50`);
+
       setMessages(data);
       scrollToBottom();
     }
