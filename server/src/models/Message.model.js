@@ -1,20 +1,25 @@
+import mongoose from "mongoose";
 
+const messageSchema = new mongoose.Schema(
+  {
+    room: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    text: {
+      type: String,
+    
+      trim: true,
+    },
+    senderName: {
+      type: String,
+      trim: true,
+    },
+  },
+  { timestamps: true } 
+);
 
+const Message = mongoose.model("Message", messageSchema);
 
-
-
-import express from "express";
-const router = express.Router();
-
-// Example static rooms list
-const rooms = [
-  { id: "general", name: "General Chat" },
-  { id: "tech", name: "Tech Talk" },
-  { id: "games", name: "Gaming" }
-];
-
-router.get("/", (_req, res) => {
-  res.json({ rooms });
-});
-
-export default router;
+export default Message;
