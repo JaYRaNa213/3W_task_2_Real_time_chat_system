@@ -17,10 +17,11 @@ export default function createSocketServer(httpServer, corsOrigin) {
       if (!username || !room) return;
 
       socket.join(room);
-      joinUser(socket.id, username, room);
+      await joinUser(socket.id, username, room);
 
       // Emit online users
-      io.to(room).emit("onlineUsers", getRoomUsers(room));
+      const onlineUsers = await getRoomUsers(room);
+      io.to(room).emit("onlineUsers", onlineUsers);
 
       // Optional system message
       socket.to(room).emit("chatMessage", {
@@ -38,7 +39,11 @@ export default function createSocketServer(httpServer, corsOrigin) {
     // Broadcast chat message
     socket.on("chatMessage", async ({ room, text, senderName }) => {
       if (!text?.trim() || !room?.trim() || !senderName?.trim()) return;
-      const doc = await Message.create({ room, text: text.trim(), senderName: senderName.trim() });
+      const doc = await Message.create({
+        room,
+        text: text.trim(),
+        senderName: senderName.trim(),
+      });
       io.to(room).emit("chatMessage", doc);
     });
 
@@ -49,11 +54,16 @@ export default function createSocketServer(httpServer, corsOrigin) {
     });
 
     // Disconnect
-    socket.on("disconnect", () => {
-      const left = leaveUser(socket.id);
+    socket.on("disconnect", async () => {
+      const left = await leaveUser(socket.id);
       if (left?.room) {
         const { room, username } = left;
-        io.to(room).emit("onlineUsers", getRoomUsers(room));
+
+        // Update online users
+        const onlineUsers = await getRoomUsers(room);
+        io.to(room).emit("onlineUsers", onlineUsers);
+
+        // System message
         socket.to(room).emit("chatMessage", {
           room,
           senderName: "System",
