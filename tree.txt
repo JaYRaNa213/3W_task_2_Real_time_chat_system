@@ -14,44 +14,60 @@
 │   ├── README.md
 │   └── src
 │       ├── api
-│       │   └── http.js
+│       │   ├── auth.js
+│       │   ├── http.js
+│       │   ├── messages.js
+│       │   └── rooms.js
 │       ├── App.jsx
 │       ├── App.test.js
 │       ├── components
-│       │   ├── ChatRoom.jsx
+│       │   ├── ChatRoom
+│       │   │   ├── ChatRoom.jsx
+│       │   │   ├── MessageInput.jsx
+│       │   │   ├── MessageList.jsx
+│       │   │   ├── OnlineUsersList.jsx
+│       │   │   └── TypingIndicator.jsx
 │       │   ├── JoinForm.jsx
-│       │   ├── MessageInput.jsx
-│       │   ├── OnlineUsersList.jsx
-│       │   ├── RoomsSidebar.jsx
-│       │   └── TypingIndicator.jsx
+│       │   ├── Navbar.jsx
+│       │   ├── PrivateRoute.jsx
+│       │   └── RoomsSidebar.jsx
+│       ├── context
+│       │   ├── AuthContext.jsx
+│       │   └── SocketContext.jsx
+│       ├── hooks
+│       │   └── useAuth.js
 │       ├── index.js
 │       ├── pages
 │       │   ├── Chat.jsx
-│       │   └── Home.jsx
+│       │   ├── Home.jsx
+│       │   ├── Login.jsx
+│       │   └── Register.jsx
 │       ├── reportWebVitals.js
 │       ├── setupTests.js
 │       ├── socket.js
-│       └── styles.css
+│       ├── styles.css
+│       └── utils
 ├── README.md
 ├── server
 │   ├── .env
 │   ├── package-lock.json
 │   ├── package.json
 │   ├── README.md
-│   └── src
-│       ├── index.js
-│       ├── middleware
-│       │   └── auth.js
-│       ├── models
-│       │   ├── Message.model.js
-│       │   ├── Room.model.js
-│       │   └── User.model.js
-│       ├── routes
-│       │   ├── auth.route.js
-│       │   ├── messages.route.js
-│       │   └── rooms.route.js
-│       ├── socket.js
-│       └── utils
-│           └── users.js
+│   ├── src
+│   │   ├── index.js
+│   │   ├── middleware
+│   │   │   └── auth.js
+│   │   ├── models
+│   │   │   ├── Message.model.js
+│   │   │   ├── Room.model.js
+│   │   │   └── User.model.js
+│   │   ├── routes
+│   │   │   ├── auth.route.js
+│   │   │   ├── messages.route.js
+│   │   │   └── rooms.route.js
+│   │   ├── socket.js
+│   │   └── utils
+│   │       └── users.js
+│   └── test-socket.js
 ├── tree.js
 └── tree.txt
