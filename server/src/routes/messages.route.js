@@ -26,4 +26,15 @@ router.post("/", async (req, res) => {
   }
 });
 
+// Get all messages in a room
+router.get("/:room/messages", async (req, res, next) => {
+  try {
+    const { room } = req.params;
+    const messages = await Message.find({ room }).sort({ createdAt: 1 });
+    res.json(messages);
+  } catch (err) {
+    next(err);
+  }
+});
+
 export default router;

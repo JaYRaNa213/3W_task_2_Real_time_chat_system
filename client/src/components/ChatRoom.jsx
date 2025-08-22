@@ -5,6 +5,19 @@ import MessageInput from "./MessageInput";
 import OnlineUsersList from "./OnlineUsersList";
 import TypingIndicator from "./TypingIndicator";
 
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Box,
+  Paper,
+  Avatar,
+  List,
+  ListItem,
+  ListItemText,
+  Divider,
+} from "@mui/material";
+
 export default function ChatRoom({ me, room }) {
   const [messages, setMessages] = useState([]);
   const [online, setOnline] = useState([]);
@@ -24,17 +37,17 @@ export default function ChatRoom({ me, room }) {
     socket.connect();
     socket.emit("joinRoom", { username: me, room });
 
-    socket.on("chatMessage", msg => {
-      setMessages(prev => [...prev, msg]);
+    socket.on("chatMessage", (msg) => {
+      setMessages((prev) => [...prev, msg]);
       scrollToBottom();
     });
-    socket.on("onlineUsers", list => setOnline(list));
+    socket.on("onlineUsers", (list) => setOnline(list));
     socket.on("typing", ({ username, isTyping }) => {
-      setTyping(prev => {
+      setTyping((prev) => {
         const set = new Set(prev);
         if (isTyping) set.add(username);
         else set.delete(username);
-        return Array.from(set).filter(u => u !== me);
+        return Array.from(set).filter((u) => u !== me);
       });
     });
 
@@ -64,54 +77,90 @@ export default function ChatRoom({ me, room }) {
   }
 
   return (
-    <div className="flex flex-col h-full max-h-screen bg-gray-100 rounded-2xl shadow-lg overflow-hidden">
+    <Paper
+      elevation={4}
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100vh",
+        borderRadius: 3,
+        overflow: "hidden",
+      }}
+    >
       {/* Header */}
-      <div className="flex items-center justify-between p-4 bg-indigo-600 text-white sticky top-0 z-10">
-        <div>
-          <strong className="text-lg">#{room}</strong>
-          <span className="ml-2 text-sm opacity-80">Signed in as {me}</span>
-        </div>
-        <OnlineUsersList users={online} />
-      </div>
+      <AppBar position="sticky" color="primary" sx={{ borderRadius: 0 }}>
+        <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
+          <Box>
+            <Typography variant="h6">#{room}</Typography>
+            <Typography variant="body2" sx={{ opacity: 0.8 }}>
+              Signed in as {me}
+            </Typography>
+          </Box>
+          <OnlineUsersList users={online} />
+        </Toolbar>
+      </AppBar>
 
       {/* Messages */}
-      <div
-        className="flex-1 overflow-y-auto p-4 space-y-3 bg-white"
+      <Box
         ref={scrollRef}
+        sx={{
+          flex: 1,
+          overflowY: "auto",
+          p: 2,
+          bgcolor: "background.default",
+        }}
       >
-        {messages.map((m, i) => {
-          const mine = m.senderName === me;
-          return (
-            <div
-              key={m._id || m.createdAt + m.senderName + m.text + i}
-              className={`flex ${mine ? "justify-end" : "justify-start"}`}
-            >
-              <div
-                className={`max-w-xs px-3 py-2 rounded-xl shadow 
-                ${mine ? "bg-indigo-500 text-white" : "bg-gray-200 text-gray-900"}`}
+        <List>
+          {messages.map((m, i) => {
+            const mine = m.senderName === me;
+            return (
+              <ListItem
+                key={m._id || m.createdAt + m.senderName + i}
+                sx={{
+                  display: "flex",
+                  justifyContent: mine ? "flex-end" : "flex-start",
+                }}
               >
-                <div className="text-sm font-semibold">
-                  {mine ? "You" : m.senderName}
-                </div>
-                <div className="text-base">{m.text}</div>
-                <div className="text-[10px] opacity-70 text-right mt-1">
-                  {new Date(m.createdAt || Date.now()).toLocaleTimeString()}
-                </div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
+                <Paper
+                  elevation={2}
+                  sx={{
+                    p: 1.5,
+                    maxWidth: "70%",
+                    bgcolor: mine ? "primary.main" : "grey.200",
+                    color: mine ? "white" : "text.primary",
+                  }}
+                >
+                  <Typography
+                    variant="subtitle2"
+                    sx={{ fontWeight: "bold", mb: 0.5 }}
+                  >
+                    {mine ? "You" : m.senderName}
+                  </Typography>
+                  <Typography variant="body1">{m.text}</Typography>
+                  <Typography
+                    variant="caption"
+                    sx={{ display: "block", textAlign: "right", opacity: 0.7 }}
+                  >
+                    {new Date(m.createdAt || Date.now()).toLocaleTimeString()}
+                  </Typography>
+                </Paper>
+              </ListItem>
+            );
+          })}
+        </List>
+      </Box>
 
       {/* Typing Indicator */}
-      <div className="px-4">
+      <Box sx={{ px: 2, pb: 1 }}>
         <TypingIndicator typing={typing} />
-      </div>
+      </Box>
+
+      <Divider />
 
       {/* Input */}
-      <div className="p-4 border-t bg-gray-50">
+      <Box sx={{ p: 2, bgcolor: "grey.50" }}>
         <MessageInput onSend={send} onTyping={onTyping} />
-      </div>
-    </div>
+      </Box>
+    </Paper>
   );
 }

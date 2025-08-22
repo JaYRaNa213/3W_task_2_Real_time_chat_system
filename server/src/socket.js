@@ -1,16 +1,31 @@
 import { Server } from "socket.io";
+import { createAdapter } from "@socket.io/redis-adapter";
+import Redis from "ioredis";
 import Message from "./models/Message.model.js";
 import { joinUser, leaveUser, getRoomUsers } from "./utils/users.js";
+
+
+
 
 export default function createSocketServer(httpServer, corsOrigin) {
   const io = new Server(httpServer, {
     cors: { origin: corsOrigin, methods: ["GET", "POST"] },
   });
 
+  // ✅ Optional scaling: share events across instances
+
+  // ✅ Use env variable
+  const redisUrl = process.env.REDIS_URL;
+  if (redisUrl) {
+    const pubClient = new Redis(redisUrl);
+    const subClient = pubClient.duplicate();
+    io.adapter(createAdapter(pubClient, subClient));
+    console.log("✅ Socket.io Redis adapter connected");
+  }
+
   io.on("connection", (socket) => {
     console.log("User connected:", socket.id);
 
-    // Join room
     socket.on("joinRoom", async ({ username, room }) => {
       username = String(username || "").trim();
       room = String(room || "").trim();
@@ -19,11 +34,9 @@ export default function createSocketServer(httpServer, corsOrigin) {
       socket.join(room);
       await joinUser(socket.id, username, room);
 
-      // Emit online users
       const onlineUsers = await getRoomUsers(room);
       io.to(room).emit("onlineUsers", onlineUsers);
 
-      // Optional system message
       socket.to(room).emit("chatMessage", {
         room,
         senderName: "System",
@@ -31,39 +44,36 @@ export default function createSocketServer(httpServer, corsOrigin) {
         createdAt: new Date().toISOString(),
       });
 
-      // Load last 50 messages and send to this client
-      const messages = await Message.find({ room }).sort({ createdAt: 1 }).limit(50);
-      socket.emit("loadHistory", messages);
+      const messages = await Message.find({ room })
+        .sort({ createdAt: -1 })
+        .limit(50)
+        .lean();
+      socket.emit("loadHistory", messages.reverse());
     });
 
-    // Broadcast chat message
-    socket.on("chatMessage", async ({ room, text, senderName }) => {
+    socket.on("chatMessage", async ({ room, text, senderName, senderId }) => {
       if (!text?.trim() || !room?.trim() || !senderName?.trim()) return;
       const doc = await Message.create({
-        room,
+        room: room.trim(),
         text: text.trim(),
         senderName: senderName.trim(),
+        senderId: senderId || undefined,
       });
       io.to(room).emit("chatMessage", doc);
     });
 
-    // Typing indicator
     socket.on("typing", ({ room, username, isTyping }) => {
       if (!room) return;
       socket.to(room).emit("typing", { username, isTyping: !!isTyping });
     });
 
-    // Disconnect
     socket.on("disconnect", async () => {
       const left = await leaveUser(socket.id);
       if (left?.room) {
         const { room, username } = left;
-
-        // Update online users
         const onlineUsers = await getRoomUsers(room);
         io.to(room).emit("onlineUsers", onlineUsers);
 
-        // System message
         socket.to(room).emit("chatMessage", {
           room,
           senderName: "System",

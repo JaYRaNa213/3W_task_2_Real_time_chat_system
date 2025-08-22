@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from "react";
+import { TextField, IconButton, Paper } from "@mui/material";
+import SendIcon from "@mui/icons-material/Send";
 
 export default function MessageInput({ onSend, onTyping }) {
   const [text, setText] = useState("");
@@ -21,9 +23,28 @@ export default function MessageInput({ onSend, onTyping }) {
   useEffect(() => () => clearTimeout(typingTimeout.current), []);
 
   return (
-    <div className="inputRow">
-      <input value={text} onChange={handleChange} placeholder="Type a message..." onKeyDown={e => e.key === "Enter" ? submit() : null} />
-      <button className="button" onClick={submit}>Send</button>
-    </div>
+    <Paper
+      elevation={3}
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        padding: "6px 12px",
+        borderRadius: "30px",
+      }}
+    >
+      <TextField
+        value={text}
+        onChange={handleChange}
+        placeholder="Type a message..."
+        variant="standard"
+        fullWidth
+        onKeyDown={(e) => (e.key === "Enter" ? submit() : null)}
+        InputProps={{ disableUnderline: true }}
+        sx={{ marginRight: "10px" }}
+      />
+      <IconButton color="primary" onClick={submit}>
+        <SendIcon />
+      </IconButton>
+    </Paper>
   );
 }

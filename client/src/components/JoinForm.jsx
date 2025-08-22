@@ -1,62 +1,85 @@
+// src/components/JoinForm.jsx
 import { useState } from "react";
+import {
+  TextField,
+  Button,
+  Typography,
+  Box,
+  Stack,
+  Alert,
+} from "@mui/material";
 
 export default function JoinForm({ onJoin }) {
   const [username, setUsername] = useState("");
   const [room, setRoom] = useState("general");
+  const [error, setError] = useState("");
 
   const handleJoin = (e) => {
-    e.preventDefault(); // prevent page reload
+    e.preventDefault();
     const cleanUsername = username.trim();
-    const cleanRoom = room.trim().toLowerCase().replace(/\s+/g, "-"); // normalize
-    if (!cleanUsername || !cleanRoom) return;
-    onJoin({ username: cleanUsername, room: cleanRoom });
+    const cleanRoom = room.trim().toLowerCase().replace(/\s+/g, "-");
+
+    if (!cleanUsername || !cleanRoom) {
+      setError("Both fields are required!");
+      return;
+    }
+
+    if (typeof onJoin === "function") {
+      onJoin({ username: cleanUsername, room: cleanRoom });
+      setError("");
+    } else {
+      console.warn("⚠️ onJoin prop not provided!");
+      setError("Join action is not available right now.");
+    }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500">
-      <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
-        {/* Title */}
-        <h3 className="text-2xl font-bold text-center text-gray-800 mb-6">
-          Join a Chat Room
-        </h3>
+    <Box component="form" onSubmit={handleJoin} sx={{ mt: 1 }}>
+      <Stack spacing={3}>
+        {error && (
+          <Alert severity="error" sx={{ borderRadius: 2 }}>
+            {error}
+          </Alert>
+        )}
 
-        {/* Form */}
-        <form onSubmit={handleJoin} className="grid gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">
-              Your Name
-            </label>
-            <input
-              type="text"
-              placeholder="Enter your name"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              className="w-full px-4 py-2 border rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-          </div>
+        <TextField
+          label="Your Name"
+          variant="outlined"
+          fullWidth
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+        />
 
-          <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">
-              Room
-            </label>
-            <input
-              type="text"
-              placeholder="Room (e.g. general)"
-              value={room}
-              onChange={(e) => setRoom(e.target.value)}
-              className="w-full px-4 py-2 border rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-          </div>
+        <TextField
+          label="Room"
+          variant="outlined"
+          fullWidth
+          value={room}
+          onChange={(e) => setRoom(e.target.value)}
+        />
 
-          <button
-            type="submit"
-            disabled={!username.trim() || !room.trim()}
-            className="w-full py-2 px-4 mt-2 rounded-xl font-semibold text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50"
-          >
-            Join
-          </button>
-        </form>
-      </div>
-    </div>
+        <Button
+          type="submit"
+          variant="contained"
+          size="large"
+          disabled={!username.trim() || !room.trim()}
+          sx={{
+            borderRadius: 3,
+            py: 1.4,
+            textTransform: "none",
+            fontWeight: "bold",
+            background:
+              "linear-gradient(90deg, #6366F1 0%, #9333EA 50%, #EC4899 100%)",
+            "&:hover": {
+              background:
+                "linear-gradient(90deg, #4F46E5 0%, #7E22CE 50%, #DB2777 100%)",
+            },
+          }}
+          fullWidth
+        >
+          Join
+        </Button>
+      </Stack>
+    </Box>
   );
 }
