@@ -10,30 +10,21 @@ import {authMiddleware }from "./middleware/auth.js";
 import createSocketServer from "./socket.js";
 import roomsRouter from "./routes/rooms.route.js";
 import messagesRouter from "./routes/messages.route.js";
-import authRouter from "./routes/auth.route.js"; // enable when ready
-// import errorHandler from "./middleware/errorHandler.js"; // enable when ready
+import authRouter from "./routes/auth.route.js"; // 
 
 dotenv.config();
 
-// -------------------------
-// Config
-// -------------------------
 const PORT = process.env.PORT || 5000;
 const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || "http://localhost:3000";
 
-// ✅ MongoDB: ENV first, fallback static
 const MONGO_URI =
   process.env.MONGO_URI ||
   "mongodb+srv://jayrana0909:jay0000@religiouscluster0.kjqo7ay.mongodb.net/3W_Real_time_Chat_System_collection?retryWrites=true&w=majority";
 
-// ✅ Redis: ENV first, fallback static
 const REDIS_URL =
   process.env.REDIS_URL ||
   "redis://default:m7tx77PBfE1AaO26VOxqXydJpHwyqJ1U@redis-17330.c61.us-east-1-3.ec2.redns.redis-cloud.com:17330";
 
-// -------------------------
-// Redis Setup
-// -------------------------
 console.log("🔗 Using Redis URL:", REDIS_URL);
 const redis = new Redis(REDIS_URL, {
   retryStrategy(times) {
@@ -46,15 +37,11 @@ const redis = new Redis(REDIS_URL, {
 redis.on("connect", () => console.log("✅ Redis connected"));
 redis.on("error", (err) => console.error("❌ Redis error:", err));
 
-// -------------------------
-// Express Setup
-// -------------------------
 const app = express();
 app.use(express.json());
 app.use(cors({ origin: CLIENT_ORIGIN }));
 app.use(morgan("dev"));
 
-// Health check
 app.get("/", (_req, res) => res.json({ ok: true, service: "chat-server" }));
 
 // Routes
@@ -80,7 +67,4 @@ mongoose
     process.exit(1);
   });
 
-// -------------------------
-// Export Redis (optional)
-// -------------------------
 export { redis };

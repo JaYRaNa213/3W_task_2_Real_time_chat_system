@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const messageSchema = new mongoose.Schema(
   {
-    room: { type: String, required: true, trim: true, index: true },
+    room: { type: String,  trim: true, index: true },
     text: { type: String, trim: true },
     senderName: { type: String, trim: true },
     senderId: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, // optional link
