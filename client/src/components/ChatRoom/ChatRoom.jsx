@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { api } from "../api/http";
-import { socket } from "../socket";
+import { api } from "../../api/http";
+import { socket } from "../../socket";
 import MessageInput from "./MessageInput";
 import OnlineUsersList from "./OnlineUsersList";
 import TypingIndicator from "./TypingIndicator";
