@@ -35,21 +35,23 @@
 ├── README.md
 ├── server
 │   ├── .env
-│   ├── .env.example
 │   ├── package-lock.json
 │   ├── package.json
 │   ├── README.md
-│   ├── src
-│   │   ├── index.js
-│   │   ├── models
-│   │   │   ├── Message.model.js
-│   │   │   └── Room.model.js
-│   │   ├── routes
-│   │   │   ├── messages.route.js
-│   │   │   └── rooms.route.js
-│   │   ├── socket.js
-│   │   └── utils
-│   │       └── users.js
-│   └── test-redis.js
+│   └── src
+│       ├── index.js
+│       ├── middleware
+│       │   └── auth.js
+│       ├── models
+│       │   ├── Message.model.js
+│       │   ├── Room.model.js
+│       │   └── User.model.js
+│       ├── routes
+│       │   ├── auth.route.js
+│       │   ├── messages.route.js
+│       │   └── rooms.route.js
+│       ├── socket.js
+│       └── utils
+│           └── users.js
 ├── tree.js
 └── tree.txt

@@ -6,11 +6,11 @@ import mongoose from "mongoose";
 import morgan from "morgan";
 import Redis from "ioredis";
 import dotenv from "dotenv";
-
+import {authMiddleware }from "./middleware/auth.js";
 import createSocketServer from "./socket.js";
 import roomsRouter from "./routes/rooms.route.js";
 import messagesRouter from "./routes/messages.route.js";
-// import authRouter from "./routes/auth.route.js"; // enable when ready
+import authRouter from "./routes/auth.route.js"; // enable when ready
 // import errorHandler from "./middleware/errorHandler.js"; // enable when ready
 
 dotenv.config();
@@ -59,21 +59,13 @@ app.get("/", (_req, res) => res.json({ ok: true, service: "chat-server" }));
 
 // Routes
 app.use("/api/rooms", roomsRouter);
-app.use("/api/messages", messagesRouter);
-// app.use("/api/auth", authRouter); // enable when real auth routes exist
+app.use("/api/messages",authMiddleware, messagesRouter);
 
-// Centralized error handler (optional)
-// app.use(errorHandler);
+app.use("/api/auth", authRouter); 
 
-// -------------------------
-// HTTP + Socket.io Server
-// -------------------------
 const server = http.createServer(app);
 createSocketServer(server, CLIENT_ORIGIN);
 
-// -------------------------
-// MongoDB Connection
-// -------------------------
 mongoose
   .connect(MONGO_URI)
   .then(() => {
