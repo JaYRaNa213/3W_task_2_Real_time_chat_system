@@ -15,16 +15,19 @@
 │   └── src
 │       ├── api
 │       │   └── http.js
-│       ├── App.js
+│       ├── App.jsx
 │       ├── App.test.js
 │       ├── components
-│       │   ├── ChatRoom.js
-│       │   ├── JoinForm.js
-│       │   ├── MessageInput.js
-│       │   ├── OnlineUsersList.js
-│       │   ├── RoomsSidebar.js
-│       │   └── TypingIndicator.js
+│       │   ├── ChatRoom.jsx
+│       │   ├── JoinForm.jsx
+│       │   ├── MessageInput.jsx
+│       │   ├── OnlineUsersList.jsx
+│       │   ├── RoomsSidebar.jsx
+│       │   └── TypingIndicator.jsx
 │       ├── index.js
+│       ├── pages
+│       │   ├── Chat.jsx
+│       │   └── Home.jsx
 │       ├── reportWebVitals.js
 │       ├── setupTests.js
 │       ├── socket.js
