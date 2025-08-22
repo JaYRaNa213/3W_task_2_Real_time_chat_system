@@ -1,15 +1,13 @@
+// server/src/utils/users.js
 import Redis from "ioredis";
 
-if (!process.env.REDIS_URL) {
-  console.error("❌ REDIS_URL not defined in .env");
-  process.exit(1);
-}
+// Use your Redis URL directly
+const REDIS_URL = "redis://default:m7tx77PBfE1AaO26VOxqXydJpHwyqJ1U@redis-17330.c61.us-east-1-3.ec2.redns.redis-cloud.com:17330";
 
-// Connect to Redis with retry strategy
-const redis = new Redis(process.env.REDIS_URL, {
+const redis = new Redis(REDIS_URL, {
   retryStrategy(times) {
     console.error(`Redis retry attempt #${times}`);
-    return Math.min(times * 50, 2000); // wait 50ms, 100ms, 150ms… max 2s
+    return Math.min(times * 50, 2000); // 50ms, 100ms, 150ms… max 2s
   },
 });
 
@@ -80,3 +78,6 @@ export async function leaveUser(id) {
 export async function getRoomUsers(room) {
   return await getUsersInRoom(room);
 }
+
+// Export Redis instance if needed elsewhere
+export { redis };

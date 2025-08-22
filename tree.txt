@@ -36,15 +36,17 @@
 │   ├── package-lock.json
 │   ├── package.json
 │   ├── README.md
-│   └── src
-│       ├── index.js
-│       ├── models
-│       │   ├── Message.model.js
-│       │   └── Room.model.js
-│       ├── routes
-│       │   └── rooms.route.js
-│       ├── socket.js
-│       └── utils
-│           └── users.js
+│   ├── src
+│   │   ├── index.js
+│   │   ├── models
+│   │   │   ├── Message.model.js
+│   │   │   └── Room.model.js
+│   │   ├── routes
+│   │   │   ├── messages.route.js
+│   │   │   └── rooms.route.js
+│   │   ├── socket.js
+│   │   └── utils
+│   │       └── users.js
+│   └── test-redis.js
 ├── tree.js
 └── tree.txt
