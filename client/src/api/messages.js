@@ -1,6 +1,8 @@
-// messages.js
 import http from './http';
-export const fetchMessages = async (roomId) => {
-  const response = await http.get(`/api/messages?roomId=${roomId}`);
-  return response.data;
+
+// This one matches your /api/messages/:room route, but note your server
+// currently protects /api/messages/* with auth. Prefer socket or rooms route.
+export const fetchMessagesByRoom = async (roomName) => {
+  const { data } = await http.get(`/api/messages/${encodeURIComponent(roomName)}`);
+  return data;
 };

@@ -52,20 +52,29 @@ export default function createSocketServer(httpServer, corsOrigin) {
     });
 
     socket.on("chatMessage", async ({ room, text, senderName, senderId }) => {
-      if (!text?.trim() || !room?.trim() || !senderName?.trim()) return;
-      const doc = await Message.create({
-        room: room.trim(),
-        text: text.trim(),
-        senderName: senderName.trim(),
-        senderId: senderId || undefined,
-      });
-      io.to(room).emit("chatMessage", doc);
-    });
+  if (!text?.trim() || !room?.trim() || !senderName?.trim()) return;
 
-    socket.on("typing", ({ room, username, isTyping }) => {
-      if (!room) return;
-      socket.to(room).emit("typing", { username, isTyping: !!isTyping });
-    });
+  const doc = await Message.create({
+    room: room.trim(),
+    text: text.trim(),
+    senderName: senderName.trim(),
+    senderId: senderId || socket.id,
+  });
+
+  // Convert doc to plain object & normalize createdAt
+  const message = {
+    _id: doc._id.toString(),
+    room: doc.room,
+    text: doc.text,
+    senderName: doc.senderName,
+    senderId: doc.senderId,
+    createdAt: doc.createdAt.toISOString(),
+  };
+
+  // Emit back to everyone (including sender)
+  io.to(room).emit("chatMessage", message);
+});
+
 
     socket.on("disconnect", async () => {
       const left = await leaveUser(socket.id);

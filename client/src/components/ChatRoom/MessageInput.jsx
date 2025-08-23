@@ -1,33 +1,40 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import { Box, TextField, Button } from "@mui/material";
-import { SocketContext } from "../../context/SocketContext";
 
-const MessageInput = ({ roomId, username }) => {
-  const socket = useContext(SocketContext);
+const MessageInput = ({ onSend, onTyping }) => {
   const [message, setMessage] = useState("");
 
   const handleSend = () => {
-    if (message.trim() && socket) {
-      socket.emit("chatMessage", { roomId, username, message });
-      setMessage("");
+    const text = message.trim();
+    if (!text) return;
+    onSend(text);
+    setMessage("");
+    onTyping(false);
+  };
+
+  const handleChange = (e) => {
+    const val = e.target.value;
+    setMessage(val);
+    onTyping(val.length > 0);
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
     }
   };
 
-  const handleTyping = (e) => {
-    setMessage(e.target.value);
-    socket.emit("typing", { username, roomId, isTyping: e.target.value.length > 0 });
-  };
-
   return (
-    <Box sx={{ display: "flex", p: 2, borderTop: "1px solid #ddd" }}>
+    <Box sx={{ display: "flex", gap: 1 }}>
       <TextField
         value={message}
-        onChange={handleTyping}
+        onChange={handleChange}
+        onKeyDown={handleKeyDown}
         fullWidth
         placeholder="Type a message..."
-        onKeyPress={(e) => e.key === "Enter" && handleSend()}
       />
-      <Button onClick={handleSend} variant="contained" sx={{ ml: 1 }}>
+      <Button onClick={handleSend} variant="contained">
         Send
       </Button>
     </Box>

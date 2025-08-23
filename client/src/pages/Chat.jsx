@@ -9,28 +9,26 @@ const Chat = () => {
   const location = useLocation();
   const username = location.state?.username || localStorage.getItem("username") || "Guest";
 
-  const [roomId, setRoomId] = useState(null);
+  const [room, setRoom] = useState(null); // use room name (string)
 
-  // Dummy data (replace with API later if needed)
+  // Dummy data (your dashboard widgets)
   const recentRooms = ["General", "Private Room", "NewRoomName", "Fun Room"];
-  const onlineCount = 8; // example count
+  const onlineCount = 8;
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", height: "100vh" }}>
-      {/* Navbar */}
       <Navbar />
 
-      {/* Main Content */}
       <Box sx={{ flex: 1, display: "flex", bgcolor: "#f5f6fa" }}>
         {/* Rooms Sidebar */}
-        <RoomsSidebar setRoomId={setRoomId} />
+        <RoomsSidebar onSelectRoom={setRoom} />
 
         {/* Chat Window */}
         <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
-          {roomId ? (
-            <ChatRoom roomId={roomId} username={username} />
+          {room ? (
+            <ChatRoom me={username} room={room} />
           ) : (
-            // 📌 Dashboard when no room is selected
+            // Dashboard when no room selected
             <Box
               sx={{
                 flex: 1,
@@ -56,14 +54,13 @@ const Chat = () => {
                 <Button variant="contained" color="primary">
                   + Create Room
                 </Button>
-                <Button variant="outlined" color="secondary" onClick={() => setRoomId("General")}>
+                <Button variant="outlined" color="secondary" onClick={() => setRoom("General")}>
                   Join General
                 </Button>
               </Box>
 
               {/* Dashboard Grid */}
               <Grid container spacing={3} justifyContent="center" maxWidth="md">
-                {/* Card 1: Stats */}
                 <Grid item xs={12} md={4}>
                   <Card sx={{ p: 2, borderRadius: 3, boxShadow: 2 }}>
                     <CardContent sx={{ textAlign: "center" }}>
@@ -75,7 +72,6 @@ const Chat = () => {
                   </Card>
                 </Grid>
 
-                {/* Card 2: Recent Rooms */}
                 <Grid item xs={12} md={4}>
                   <Card sx={{ p: 2, borderRadius: 3, boxShadow: 2 }}>
                     <CardContent>
@@ -83,13 +79,9 @@ const Chat = () => {
                         Recent Rooms
                       </Typography>
                       <List dense>
-                        {recentRooms.map((room, idx) => (
-                          <ListItem
-                            key={idx}
-                            button
-                            onClick={() => setRoomId(room)}
-                          >
-                            <ListItemText primary={room} />
+                        {recentRooms.map((r, idx) => (
+                          <ListItem key={idx} button onClick={() => setRoom(r)}>
+                            <ListItemText primary={r} />
                           </ListItem>
                         ))}
                       </List>
@@ -97,7 +89,6 @@ const Chat = () => {
                   </Card>
                 </Grid>
 
-                {/* Card 3: Tips */}
                 <Grid item xs={12} md={4}>
                   <Card sx={{ p: 2, borderRadius: 3, boxShadow: 2 }}>
                     <CardContent>

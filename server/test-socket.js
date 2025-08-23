@@ -13,12 +13,12 @@ const randomUsername = () => `User${Math.floor(Math.random() * 1000)}`;
 
 for (let i = 0; i < NUM_USERS; i++) {
   const username = randomUsername();
-  const socket = io(SERVER_URL);
+  const socket = io(SERVER_URL, { transports: ["websocket"] });
 
   socket.on("connect", () => {
     console.log(`✅ ${username} connected: ${socket.id}`);
 
-    // ✅ Fixed: use "room" instead of "roomId"
+    // Join room
     socket.emit("joinRoom", { room: ROOM_ID, username });
     console.log(`➡️ ${username} joined room: ${ROOM_ID}`);
 
@@ -26,36 +26,35 @@ for (let i = 0; i < NUM_USERS; i++) {
     let msgCount = 1;
     const msgInterval = setInterval(() => {
       const text = `Hello from ${username} #${msgCount++}`;
-      // ✅ Fixed: use "room", "text", "senderName"
       socket.emit("chatMessage", {
         room: ROOM_ID,
         text,
         senderName: username,
       });
       console.log(`💬 ${username} sent: "${text}"`);
-    }, MESSAGE_INTERVAL);
+    }, MESSAGE_INTERVAL + Math.random() * 1000); // small random offset
 
-    // Typing simulation (✅ use correct payload)
+    // Typing simulation
     const typingInterval = setInterval(() => {
       socket.emit("typing", { room: ROOM_ID, username, isTyping: true });
       console.log(`⌨️ ${username} typing...`);
       setTimeout(() => {
         socket.emit("typing", { room: ROOM_ID, username, isTyping: false });
         console.log(`⌨️ ${username} stopped typing`);
-      }, 1000);
-    }, MESSAGE_INTERVAL * 2);
+      }, 1000 + Math.random() * 500);
+    }, MESSAGE_INTERVAL * 2 + Math.random() * 1000);
 
     // Listen for chat messages from others
     socket.on("chatMessage", (data) => {
-      console.log(`📨 ${username} received:`, data);
+      console.log(`📨 ${username} received:`, data.text);
     });
 
     // Listen for online users
     socket.on("onlineUsers", (data) => {
-      console.log(`🟢 ${username} online users:`, data);
+      console.log(`🟢 ${username} online users:`, data.map(u => u.username));
     });
 
-    // Save user with both intervals
+    // Save user with intervals
     users.push({ username, socket, msgInterval, typingInterval });
   });
 
@@ -64,7 +63,7 @@ for (let i = 0; i < NUM_USERS; i++) {
   });
 }
 
-// Later, disconnect all users after 30 seconds
+// Disconnect all users after 30 seconds
 setTimeout(() => {
   users.forEach(({ username, socket, msgInterval, typingInterval }) => {
     clearInterval(msgInterval);

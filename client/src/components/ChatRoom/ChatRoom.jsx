@@ -1,142 +1,152 @@
-import React, { useEffect, useState, useContext } from "react";
-import { Box, Typography, Divider, Button } from "@mui/material";
-import { SocketContext } from "../../context/SocketContext";
-import MessageList from "./MessageList";
-import TypingIndicator from "./TypingIndicator";
+import { useContext, useEffect, useRef, useState } from "react";
 import MessageInput from "./MessageInput";
 import OnlineUsersList from "./OnlineUsersList";
-import axios from "axios";
+import TypingIndicator from "./TypingIndicator";
+import MessageList from "./MessageList";
+import { SocketContext } from "../../context/SocketContext";
 
-const ChatRoom = ({ roomId, username, onCreateRoom, onJoinGeneral }) => {
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Box,
+  Paper,
+  Divider,
+} from "@mui/material";
+
+export default function ChatRoom({ me, room }) {
   const socket = useContext(SocketContext);
+  const scrollRef = useRef(null);
+
   const [messages, setMessages] = useState([]);
+  const [online, setOnline] = useState([]);
   const [typingUsers, setTypingUsers] = useState([]);
-  const [onlineUsers, setOnlineUsers] = useState([]);
 
-  // Load chat history when a room is selected
-  useEffect(() => {
-    if (roomId) {
-      axios.get(`http://localhost:5000/api/messages/${roomId}`)
-        .then((res) => setMessages(res.data))
-        .catch((err) => console.error(err));
-    }
-  }, [roomId]);
-
-  // Socket listeners
+  // Join room & setup listeners
   useEffect(() => {
     if (!socket) return;
 
-    socket.on("chatMessage", (msg) => {
-      setMessages((prev) => [...prev, msg]);
-    });
+    if (!socket.connected) socket.connect();
 
-    socket.on("typing", ({ username, isTyping }) => {
-      setTypingUsers((prev) =>
-        isTyping
-          ? [...new Set([...prev, username])]
-          : prev.filter((u) => u !== username)
-      );
-    });
+    socket.emit("joinRoom", { username: me, room });
 
-    socket.on("onlineUsers", (users) => {
-      setOnlineUsers(users);
-    });
+    const onLoadHistory = (history) => setMessages(history || []);
+
+    const onChatMessage = (msg) => {
+      setMessages((prev) => {
+        // avoid duplicates (optimistic messages)
+        if (prev.some((m) => m._id === msg._id && m.senderName === msg.senderName)) return prev;
+        return [...prev, msg];
+      });
+      scrollToBottom();
+    };
+
+    const onOnlineUsers = (list) =>
+  setOnline(list?.map((u) => ({ id: u, username: u })) || []);
+
+
+    const onTyping = ({ username, isTyping }) => {
+      setTypingUsers((prev) => {
+        const set = new Set(prev);
+        if (isTyping) set.add(username);
+        else set.delete(username);
+        return Array.from(set).filter((u) => u !== me);
+      });
+    };
+
+    socket.on("loadHistory", onLoadHistory);
+    socket.on("chatMessage", onChatMessage);
+    socket.on("onlineUsers", onOnlineUsers);
+    socket.on("typing", onTyping);
 
     return () => {
-      socket.off("chatMessage");
-      socket.off("typing");
-      socket.off("onlineUsers");
+      socket.off("loadHistory", onLoadHistory);
+      socket.off("chatMessage", onChatMessage);
+      socket.off("onlineUsers", onOnlineUsers);
+      socket.off("typing", onTyping);
+      socket.disconnect();
+      setMessages([]);
+      setOnline([]);
+      setTypingUsers([]);
     };
-  }, [socket]);
+  }, [room, me, socket]);
+
+  // Scroll helper
+  const scrollToBottom = () => {
+    setTimeout(() => {
+      scrollRef.current?.scrollTo({
+        top: scrollRef.current.scrollHeight,
+        behavior: "smooth",
+      });
+    }, 0);
+  };
+
+  // Handle sending message
+  const send = (text) => {
+    if (!text.trim() || !socket) return;
+
+    const tempId = Date.now().toString();
+    const newMsg = {
+      senderName: me,
+      text,
+      createdAt: new Date().toISOString(),
+      _id: tempId,
+    };
+
+    // Optimistically add
+    setMessages((prev) => [...prev, newMsg]);
+    scrollToBottom();
+
+    // Emit to server
+    socket.emit("chatMessage", { room, text, senderName: me });
+  };
+
+  // Handle typing indicator
+  const onTypingChange = (isTyping) => {
+    if (!socket) return;
+    socket.emit("typing", { room, username: me, isTyping });
+  };
 
   return (
-    <Box sx={{ display: "flex", height: "calc(100vh - 64px)", bgcolor: "#f9f9fb" }}>
-      {/* Chat Window */}
-      <Box sx={{ flex: 3, display: "flex", flexDirection: "column", p: 2 }}>
-        {!roomId ? (
-          // Show Welcome Center when no room selected
-          <Box
-            sx={{
-              flex: 1,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              flexDirection: "column",
-              textAlign: "center",
-              p: 3,
-              color: "gray",
-            }}
-          >
-            <Typography variant="h4" sx={{ mb: 2 }}>
-              👋 Welcome back, {username}!
+    <Paper
+      elevation={4}
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100vh",
+        borderRadius: 3,
+        overflow: "hidden",
+      }}
+    >
+      {/* Header */}
+      <AppBar position="sticky" color="primary" sx={{ borderRadius: 0 }}>
+        <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
+          <Box>
+            <Typography variant="h6">#{room}</Typography>
+            <Typography variant="body2" sx={{ opacity: 0.8 }}>
+              Signed in as {me}
             </Typography>
-
-            <Typography variant="body1" sx={{ mb: 3 }}>
-              Select a room from the left or create your own to start chatting.
-            </Typography>
-
-            <Box sx={{ display: "flex", gap: 2 }}>
-              <Button variant="contained" color="primary" onClick={onCreateRoom}>
-                + Create Room
-              </Button>
-              <Button variant="outlined" color="secondary" onClick={onJoinGeneral}>
-                Join General
-              </Button>
-            </Box>
-
-            <Box sx={{ mt: 4 }}>
-              <Typography variant="body2">
-                💡 Tip: You can see who’s online in the right sidebar.
-              </Typography>
-            </Box>
           </Box>
-        ) : (
-          // Show chat when room selected
-          <>
-            {messages.length === 0 ? (
-              <Box
-                sx={{
-                  flex: 1,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  flexDirection: "column",
-                  color: "gray",
-                }}
-              >
-                <Typography variant="h6">No messages yet 🚀</Typography>
-                <Typography variant="body2">
-                  Start the conversation and break the silence!
-                </Typography>
-              </Box>
-            ) : (
-              <MessageList messages={messages} username={username} />
-            )}
-            <TypingIndicator typingUsers={typingUsers} />
-            <Divider />
-            <MessageInput roomId={roomId} username={username} />
-          </>
-        )}
+          <OnlineUsersList users={online} />
+        </Toolbar>
+      </AppBar>
+
+      {/* Messages */}
+      <Box ref={scrollRef} sx={{ flex: 1, overflowY: "auto" }}>
+        <MessageList messages={messages} me={me} />
       </Box>
 
-      {/* Online Users */}
-      <Box
-        sx={{
-          flex: 1,
-          borderLeft: "1px solid #ddd",
-          bgcolor: "#fff",
-          p: 2,
-          display: "flex",
-          flexDirection: "column",
-        }}
-      >
-        <Typography variant="h6" sx={{ mb: 2 }}>
-          Online Users
-        </Typography>
-        <OnlineUsersList users={onlineUsers} />
+      {/* Typing Indicator */}
+      <Box sx={{ px: 2, pb: 1 }}>
+        <TypingIndicator typingUsers={typingUsers} />
       </Box>
-    </Box>
+
+      <Divider />
+
+      {/* Input */}
+      <Box sx={{ p: 2, bgcolor: "grey.50" }}>
+        <MessageInput onSend={send} onTyping={onTypingChange} />
+      </Box>
+    </Paper>
   );
-};
-
-export default ChatRoom;
+}
