@@ -10,27 +10,22 @@ export const SocketProvider = ({ children }) => {
   useEffect(() => {
     const s = io(SOCKET_URL, {
       transports: ["websocket"],
+      autoConnect: true, // let provider auto-connect
       reconnection: true,
       reconnectionAttempts: 5,
-      autoConnect: true,
     });
 
-    s.on("connect", () => {
-      console.log("✅ Socket connected:", s.id);
-    });
-
-    s.on("disconnect", () => {
-      console.log("🔌 Socket disconnected");
-    });
+    s.on("connect", () => console.log("✅ Socket connected:", s.id));
+    s.on("disconnect", () => console.log("🔌 Socket disconnected"));
 
     setSocket(s);
 
     return () => {
-      s.disconnect();
+      // Only cleanup listeners, do NOT disconnect here if multiple components use it
+      s.off("connect");
+      s.off("disconnect");
     };
   }, [SOCKET_URL]);
 
-  return (
-    <SocketContext.Provider value={socket}>{children}</SocketContext.Provider>
-  );
+  return <SocketContext.Provider value={socket}>{children}</SocketContext.Provider>;
 };

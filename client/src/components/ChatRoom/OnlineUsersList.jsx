@@ -2,22 +2,32 @@ import React from "react";
 import { Box, Typography, List, ListItem } from "@mui/material";
 
 const OnlineUsersList = ({ users }) => {
-  // users are objects: { id, username, room }
+  // Ensure users is always an array
+  const safeUsers = Array.isArray(users) ? users : [];
+
   return (
     <Box sx={{ p: 1, textAlign: "right" }}>
-      <Typography variant="body2" sx={{ fontWeight: 600 }}>
-        Online: {users?.length || 0}
+      <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }}>
+        Online: {safeUsers.length}
       </Typography>
+
       <List dense sx={{ maxHeight: 200, overflowY: "auto" }}>
-  {users.map((user) => (
-    <ListItem key={user.id} sx={{ py: 0.5 }}>
-      {user.username} ({user.room})
-    </ListItem>
-  ))}
-</List>
-
-
-
+        {safeUsers.length > 0 ? (
+          safeUsers.map((user) => (
+            <ListItem key={user.id} sx={{ py: 0.5 }}>
+              <Typography variant="body2">
+                {String(user.username)} ({String(user.room)})
+              </Typography>
+            </ListItem>
+          ))
+        ) : (
+          <ListItem>
+            <Typography variant="body2" color="textSecondary">
+              No users online
+            </Typography>
+          </ListItem>
+        )}
+      </List>
     </Box>
   );
 };

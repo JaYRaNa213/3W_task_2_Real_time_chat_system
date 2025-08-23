@@ -26,7 +26,7 @@ export default function ChatRoom({ me, room }) {
   useEffect(() => {
     if (!socket) return;
 
-    if (!socket.connected) socket.connect();
+    // if (!socket.connected) socket.connect();
 
     socket.emit("joinRoom", { username: me, room });
 
