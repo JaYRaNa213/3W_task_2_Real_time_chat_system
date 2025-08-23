@@ -107,17 +107,22 @@ const Home = () => {
           >
             Register
           </Button>
-          <Button
-            variant="contained"
-            onClick={() => navigate("/chat")}
-            sx={{
-              minWidth: 150,
-              bgcolor: "#1e1e2f",
-              "&:hover": { bgcolor: "#35355d" },
-            }}
-          >
-            Continue as Guest
-          </Button>
+         <Button
+  variant="contained"
+  onClick={() => {
+    const guestName = `Guest_${Date.now()}`;
+    localStorage.setItem("username", guestName);
+    navigate("/chat");
+  }}
+  sx={{
+    minWidth: 150,
+    bgcolor: "#1e1e2f",
+    "&:hover": { bgcolor: "#35355d" },
+  }}
+>
+  Continue as Guest
+</Button>
+
         </Stack>
 
        
