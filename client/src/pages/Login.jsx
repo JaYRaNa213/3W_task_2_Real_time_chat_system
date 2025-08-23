@@ -77,7 +77,7 @@ const Login = () => {
           maxWidth={400}
           mx="auto"
         >
-          Enter your credentials to access ChatFlow and start chatting in
+          Enter your credentials to access 3W Real Time Chat and start chatting in
           real-time.
         </Typography>
       </Box>
