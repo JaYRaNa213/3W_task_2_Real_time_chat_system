@@ -1,133 +1,116 @@
-// src/components/RoomsSidebar.jsx
-import { useEffect, useState } from "react";
-import { api } from "../api/http";
+import React, { useEffect, useState, useContext } from "react";
 import {
-  Drawer,
   Box,
-  Typography,
   List,
   ListItemButton,
-  ListItemText,
-  Divider,
-  TextField,
-  Button,
-  Stack,
+  Typography,
+  IconButton,
+  Collapse,
 } from "@mui/material";
+import MenuIcon from "@mui/icons-material/Menu";
+import CloseIcon from "@mui/icons-material/Close";
+import axios from "axios";
+import { SocketContext } from "../context/SocketContext";
 
-export default function RoomsSidebar({ currentRoom, onSwitch }) {
+const RoomsSidebar = ({ setRoomId }) => {
   const [rooms, setRooms] = useState([]);
-  const [newRoom, setNewRoom] = useState("");
+  const [open, setOpen] = useState(true);
+  const  socket = useContext(SocketContext);
+ 
 
-  // Load rooms from backend
-  async function loadRooms() {
-    try {
-      const { data } = await api.get("/api/rooms");
-      setRooms(Array.isArray(data.rooms) ? data.rooms : []);
-    } catch (err) {
-      console.error("Failed to load rooms:", err);
-      setRooms([]);
-    }
+  const [loading, setLoading] = useState(true);
+
+useEffect(() => {
+  setLoading(true);
+  axios
+    .get("http://localhost:5000/api/rooms")
+    .then((res) => setRooms(res.data))
+    .catch((err) => console.error(err))
+    .finally(() => setLoading(false));
+}, []);
+
+  const handleJoinRoom = (roomId) => {
+  if (!socket || !socket.connected) {
+    console.warn("Socket not ready yet");
+    return;
   }
+  socket.emit("joinRoom", roomId);
+  setRoomId(roomId);
+};
 
-  // Create a new room
-  async function createRoom() {
-    if (!newRoom.trim()) return;
-    try {
-      const { data } = await api.post("/api/rooms", { name: newRoom.trim() });
-      setNewRoom("");
-      await loadRooms();
-      if (data?.name) onSwitch(data.name);
-    } catch (err) {
-      console.error("Failed to create room:", err);
-    }
-  }
 
-  useEffect(() => {
-    loadRooms();
-  }, []);
+  const toggleSidebar = () => setOpen((prev) => !prev);
 
   return (
-    <Drawer
-      variant="permanent"
-      anchor="left"
+    <Box
       sx={{
-        width: 260,
-        flexShrink: 0,
-        "& .MuiDrawer-paper": {
-          width: 260,
-          boxSizing: "border-box",
-          bgcolor: "grey.900",
-          color: "white",
-          borderRight: "none",
-          p: 2,
-        },
+        width: open ? 250 : 60,
+        borderRight: "1px solid #ddd",
+        transition: "width 0.3s",
+        p: 2,
+        position: "relative",
+        bgcolor: "#f5f5f5",
+        height: "100vh",
       }}
     >
-      <Box>
-        <Typography variant="h6" fontWeight="bold" gutterBottom>
-          💬 Chat Rooms
-        </Typography>
+      <IconButton
+        onClick={toggleSidebar}
+        sx={{
+          position: "absolute",
+          top: 10,
+          right: open ? -20 : -10,
+          bgcolor: "#fff",
+          border: "1px solid #ddd",
+          "&:hover": { bgcolor: "#eee" },
+        }}
+      >
+        {open ? <CloseIcon /> : <MenuIcon />}
+      </IconButton>
 
-        <Divider sx={{ borderColor: "rgba(255,255,255,0.2)", mb: 2 }} />
+      <Collapse in={open}>
+  <Typography variant="h6" gutterBottom>
+  Rooms
+</Typography>
 
-        {/* Rooms List */}
-        <List sx={{ flexGrow: 1, maxHeight: "60vh", overflowY: "auto" }}>
-          {rooms.length > 0 ? (
-            rooms.map((r) => (
-              <ListItemButton
-                key={r._id}
-                selected={currentRoom === r.name}
-                onClick={() => onSwitch(r.name)}
-                sx={{
-                  borderRadius: 2,
-                  mb: 1,
-                  "&.Mui-selected": {
-                    bgcolor: "primary.main",
-                    "&:hover": { bgcolor: "primary.dark" },
-                  },
-                }}
-              >
-                <ListItemText primary={`#${r.name}`} />
-              </ListItemButton>
-            ))
-          ) : (
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{ fontStyle: "italic", px: 1 }}
-            >
-              No rooms yet
-            </Typography>
-          )}
-        </List>
+{loading ? (
+  <Typography variant="body2" color="text.secondary">
+    Loading rooms...
+  </Typography>
+) : (
+  <List>
+    {rooms.map((room) => (
+      <ListItemButton
+        key={room._id}
+        onClick={() => handleJoinRoom(room._id)}
+        sx={{
+          borderRadius: 1,
+          mb: 1,
+          "&:hover": {
+            bgcolor: "#e0f7fa",
+            color: "#006064",
+            transform: "scale(1.03)",
+            transition: "all 0.2s",
+          },
+        }}
+      >
+        {room.name}
+      </ListItemButton>
+    ))}
+  </List>
+)}
 
-        <Divider sx={{ borderColor: "rgba(255,255,255,0.2)", my: 2 }} />
+{!socket || !socket.connected ? (
+  <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
+    Connecting to server...
+  </Typography>
+) : null}
 
-        {/* Create Room */}
-        <Stack spacing={1.5}>
-          <TextField
-            size="small"
-            variant="outlined"
-            placeholder="New room name"
-            value={newRoom}
-            onChange={(e) => setNewRoom(e.target.value)}
-            fullWidth
-            InputProps={{
-              sx: { bgcolor: "grey.800", borderRadius: 2, color: "white" },
-            }}
-          />
-          <Button
-            variant="contained"
-            color="primary"
-            fullWidth
-            onClick={createRoom}
-            disabled={!newRoom.trim()}
-            sx={{ borderRadius: 2, textTransform: "none" }}
-          >
-            ➕ Create Room
-          </Button>
-        </Stack>
-      </Box>
-    </Drawer>
+
+  
+</Collapse>
+
+    </Box>
   );
-}
+};
+
+export default RoomsSidebar;

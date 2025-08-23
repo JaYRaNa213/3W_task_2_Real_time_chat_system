@@ -37,6 +37,7 @@
 │       ├── hooks
 │       │   └── useAuth.js
 │       ├── index.js
+│       ├── main.jsx
 │       ├── pages
 │       │   ├── Chat.jsx
 │       │   ├── Home.jsx

@@ -1,166 +1,142 @@
-import { useEffect, useRef, useState } from "react";
-import { api } from "../../api/http";
-import { socket } from "../../socket";
+import React, { useEffect, useState, useContext } from "react";
+import { Box, Typography, Divider, Button } from "@mui/material";
+import { SocketContext } from "../../context/SocketContext";
+import MessageList from "./MessageList";
+import TypingIndicator from "./TypingIndicator";
 import MessageInput from "./MessageInput";
 import OnlineUsersList from "./OnlineUsersList";
-import TypingIndicator from "./TypingIndicator";
+import axios from "axios";
 
-import {
-  AppBar,
-  Toolbar,
-  Typography,
-  Box,
-  Paper,
-  Avatar,
-  List,
-  ListItem,
-  ListItemText,
-  Divider,
-} from "@mui/material";
-
-export default function ChatRoom({ me, room }) {
+const ChatRoom = ({ roomId, username, onCreateRoom, onJoinGeneral }) => {
+  const socket = useContext(SocketContext);
   const [messages, setMessages] = useState([]);
-  const [online, setOnline] = useState([]);
-  const [typing, setTyping] = useState([]);
-  const scrollRef = useRef(null);
+  const [typingUsers, setTypingUsers] = useState([]);
+  const [onlineUsers, setOnlineUsers] = useState([]);
 
+  // Load chat history when a room is selected
   useEffect(() => {
-    async function loadHistory() {
-      const { data } = await api.get(`/api/messages/${room}?limit=50`);
-      setMessages(data);
-      scrollToBottom();
+    if (roomId) {
+      axios.get(`http://localhost:5000/api/messages/${roomId}`)
+        .then((res) => setMessages(res.data))
+        .catch((err) => console.error(err));
     }
-    loadHistory();
-  }, [room]);
+  }, [roomId]);
 
+  // Socket listeners
   useEffect(() => {
-    socket.connect();
-    socket.emit("joinRoom", { username: me, room });
+    if (!socket) return;
 
     socket.on("chatMessage", (msg) => {
       setMessages((prev) => [...prev, msg]);
-      scrollToBottom();
     });
-    socket.on("onlineUsers", (list) => setOnline(list));
+
     socket.on("typing", ({ username, isTyping }) => {
-      setTyping((prev) => {
-        const set = new Set(prev);
-        if (isTyping) set.add(username);
-        else set.delete(username);
-        return Array.from(set).filter((u) => u !== me);
-      });
+      setTypingUsers((prev) =>
+        isTyping
+          ? [...new Set([...prev, username])]
+          : prev.filter((u) => u !== username)
+      );
+    });
+
+    socket.on("onlineUsers", (users) => {
+      setOnlineUsers(users);
     });
 
     return () => {
       socket.off("chatMessage");
-      socket.off("onlineUsers");
       socket.off("typing");
-      socket.disconnect();
+      socket.off("onlineUsers");
     };
-  }, [room, me]);
-
-  function send(text) {
-    socket.emit("chatMessage", { room, text, senderName: me });
-  }
-
-  function onTyping(isTyping) {
-    socket.emit("typing", { room, username: me, isTyping });
-  }
-
-  function scrollToBottom() {
-    setTimeout(() => {
-      scrollRef.current?.scrollTo({
-        top: scrollRef.current.scrollHeight,
-        behavior: "smooth",
-      });
-    }, 0);
-  }
+  }, [socket]);
 
   return (
-    <Paper
-      elevation={4}
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        height: "100vh",
-        borderRadius: 3,
-        overflow: "hidden",
-      }}
-    >
-      {/* Header */}
-      <AppBar position="sticky" color="primary" sx={{ borderRadius: 0 }}>
-        <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
-          <Box>
-            <Typography variant="h6">#{room}</Typography>
-            <Typography variant="body2" sx={{ opacity: 0.8 }}>
-              Signed in as {me}
+    <Box sx={{ display: "flex", height: "calc(100vh - 64px)", bgcolor: "#f9f9fb" }}>
+      {/* Chat Window */}
+      <Box sx={{ flex: 3, display: "flex", flexDirection: "column", p: 2 }}>
+        {!roomId ? (
+          // Show Welcome Center when no room selected
+          <Box
+            sx={{
+              flex: 1,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexDirection: "column",
+              textAlign: "center",
+              p: 3,
+              color: "gray",
+            }}
+          >
+            <Typography variant="h4" sx={{ mb: 2 }}>
+              👋 Welcome back, {username}!
             </Typography>
-          </Box>
-          <OnlineUsersList users={online} />
-        </Toolbar>
-      </AppBar>
 
-      {/* Messages */}
-      <Box
-        ref={scrollRef}
-        sx={{
-          flex: 1,
-          overflowY: "auto",
-          p: 2,
-          bgcolor: "background.default",
-        }}
-      >
-        <List>
-          {messages.map((m, i) => {
-            const mine = m.senderName === me;
-            return (
-              <ListItem
-                key={m._id || m.createdAt + m.senderName + i}
+            <Typography variant="body1" sx={{ mb: 3 }}>
+              Select a room from the left or create your own to start chatting.
+            </Typography>
+
+            <Box sx={{ display: "flex", gap: 2 }}>
+              <Button variant="contained" color="primary" onClick={onCreateRoom}>
+                + Create Room
+              </Button>
+              <Button variant="outlined" color="secondary" onClick={onJoinGeneral}>
+                Join General
+              </Button>
+            </Box>
+
+            <Box sx={{ mt: 4 }}>
+              <Typography variant="body2">
+                💡 Tip: You can see who’s online in the right sidebar.
+              </Typography>
+            </Box>
+          </Box>
+        ) : (
+          // Show chat when room selected
+          <>
+            {messages.length === 0 ? (
+              <Box
                 sx={{
+                  flex: 1,
                   display: "flex",
-                  justifyContent: mine ? "flex-end" : "flex-start",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexDirection: "column",
+                  color: "gray",
                 }}
               >
-                <Paper
-                  elevation={2}
-                  sx={{
-                    p: 1.5,
-                    maxWidth: "70%",
-                    bgcolor: mine ? "primary.main" : "grey.200",
-                    color: mine ? "white" : "text.primary",
-                  }}
-                >
-                  <Typography
-                    variant="subtitle2"
-                    sx={{ fontWeight: "bold", mb: 0.5 }}
-                  >
-                    {mine ? "You" : m.senderName}
-                  </Typography>
-                  <Typography variant="body1">{m.text}</Typography>
-                  <Typography
-                    variant="caption"
-                    sx={{ display: "block", textAlign: "right", opacity: 0.7 }}
-                  >
-                    {new Date(m.createdAt || Date.now()).toLocaleTimeString()}
-                  </Typography>
-                </Paper>
-              </ListItem>
-            );
-          })}
-        </List>
+                <Typography variant="h6">No messages yet 🚀</Typography>
+                <Typography variant="body2">
+                  Start the conversation and break the silence!
+                </Typography>
+              </Box>
+            ) : (
+              <MessageList messages={messages} username={username} />
+            )}
+            <TypingIndicator typingUsers={typingUsers} />
+            <Divider />
+            <MessageInput roomId={roomId} username={username} />
+          </>
+        )}
       </Box>
 
-      {/* Typing Indicator */}
-      <Box sx={{ px: 2, pb: 1 }}>
-        <TypingIndicator typing={typing} />
+      {/* Online Users */}
+      <Box
+        sx={{
+          flex: 1,
+          borderLeft: "1px solid #ddd",
+          bgcolor: "#fff",
+          p: 2,
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        <Typography variant="h6" sx={{ mb: 2 }}>
+          Online Users
+        </Typography>
+        <OnlineUsersList users={onlineUsers} />
       </Box>
-
-      <Divider />
-
-      {/* Input */}
-      <Box sx={{ p: 2, bgcolor: "grey.50" }}>
-        <MessageInput onSend={send} onTyping={onTyping} />
-      </Box>
-    </Paper>
+    </Box>
   );
-}
+};
+
+export default ChatRoom;

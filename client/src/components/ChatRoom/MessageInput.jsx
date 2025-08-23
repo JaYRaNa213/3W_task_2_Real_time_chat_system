@@ -1,50 +1,37 @@
-import { useEffect, useRef, useState } from "react";
-import { TextField, IconButton, Paper } from "@mui/material";
-import SendIcon from "@mui/icons-material/Send";
+import React, { useState, useContext } from "react";
+import { Box, TextField, Button } from "@mui/material";
+import { SocketContext } from "../../context/SocketContext";
 
-export default function MessageInput({ onSend, onTyping }) {
-  const [text, setText] = useState("");
-  const typingTimeout = useRef(null);
+const MessageInput = ({ roomId, username }) => {
+  const socket = useContext(SocketContext);
+  const [message, setMessage] = useState("");
 
-  function handleChange(e) {
-    setText(e.target.value);
-    onTyping(true);
-    clearTimeout(typingTimeout.current);
-    typingTimeout.current = setTimeout(() => onTyping(false), 800);
-  }
+  const handleSend = () => {
+    if (message.trim() && socket) {
+      socket.emit("chatMessage", { roomId, username, message });
+      setMessage("");
+    }
+  };
 
-  function submit() {
-    if (!text.trim()) return;
-    onSend(text.trim());
-    setText("");
-    onTyping(false);
-  }
-
-  useEffect(() => () => clearTimeout(typingTimeout.current), []);
+  const handleTyping = (e) => {
+    setMessage(e.target.value);
+    socket.emit("typing", { username, roomId, isTyping: e.target.value.length > 0 });
+  };
 
   return (
-    <Paper
-      elevation={3}
-      sx={{
-        display: "flex",
-        alignItems: "center",
-        padding: "6px 12px",
-        borderRadius: "30px",
-      }}
-    >
+    <Box sx={{ display: "flex", p: 2, borderTop: "1px solid #ddd" }}>
       <TextField
-        value={text}
-        onChange={handleChange}
-        placeholder="Type a message..."
-        variant="standard"
+        value={message}
+        onChange={handleTyping}
         fullWidth
-        onKeyDown={(e) => (e.key === "Enter" ? submit() : null)}
-        InputProps={{ disableUnderline: true }}
-        sx={{ marginRight: "10px" }}
+        placeholder="Type a message..."
+        onKeyPress={(e) => e.key === "Enter" && handleSend()}
       />
-      <IconButton color="primary" onClick={submit}>
-        <SendIcon />
-      </IconButton>
-    </Paper>
+      <Button onClick={handleSend} variant="contained" sx={{ ml: 1 }}>
+        Send
+      </Button>
+    </Box>
   );
-}
+};
+
+export default MessageInput;
