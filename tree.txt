@@ -37,10 +37,8 @@
 │       ├── hooks
 │       │   └── useAuth.js
 │       ├── index.js
-│       ├── main.jsx
 │       ├── pages
 │       │   ├── Chat.jsx
-│       │   ├── Dashboard.jsx
 │       │   ├── Home.jsx
 │       │   ├── Login.jsx
 │       │   └── Register.jsx
@@ -62,12 +60,15 @@
 │   │   │   ├── Message.model.js
 │   │   │   ├── Room.model.js
 │   │   │   └── User.model.js
+│   │   ├── public
+│   │   │   └── index.html
 │   │   ├── routes
 │   │   │   ├── auth.route.js
 │   │   │   ├── messages.route.js
 │   │   │   └── rooms.route.js
 │   │   ├── socket.js
 │   │   └── utils
+│   │       ├── userLocal.js
 │   │       └── users.js
 │   └── test-socket.js
 ├── tree.js

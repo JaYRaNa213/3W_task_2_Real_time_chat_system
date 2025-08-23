@@ -2,25 +2,21 @@ import { Server } from "socket.io";
 import { createAdapter } from "@socket.io/redis-adapter";
 import Redis from "ioredis";
 import Message from "./models/Message.model.js";
-import { joinUser, leaveUser, getRoomUsers } from "./utils/users.js";
-
-
-
+import { joinUser, leaveUser, getRoomUsers, redis } from "./utils/users.js";
 
 export default function createSocketServer(httpServer, corsOrigin) {
   const io = new Server(httpServer, {
     cors: { origin: corsOrigin, methods: ["GET", "POST"] },
   });
 
-  // ✅ Optional scaling: share events across instances
-
-  // ✅ Use env variable
-  const redisUrl = process.env.REDIS_URL;
-  if (redisUrl) {
-    const pubClient = new Redis(redisUrl);
-    const subClient = pubClient.duplicate();
+  // Use Redis adapter if available
+  if (redis) {
+    const pubClient = redis;
+    const subClient = redis.duplicate();
     io.adapter(createAdapter(pubClient, subClient));
     console.log("✅ Socket.io Redis adapter connected");
+  } else {
+    console.log("⚡ Using local in-memory storage for users");
   }
 
   io.on("connection", (socket) => {
@@ -52,29 +48,26 @@ export default function createSocketServer(httpServer, corsOrigin) {
     });
 
     socket.on("chatMessage", async ({ room, text, senderName, senderId }) => {
-  if (!text?.trim() || !room?.trim() || !senderName?.trim()) return;
+      if (!text?.trim() || !room?.trim() || !senderName?.trim()) return;
 
-  const doc = await Message.create({
-    room: room.trim(),
-    text: text.trim(),
-    senderName: senderName.trim(),
-    senderId: senderId || socket.id,
-  });
+      const doc = await Message.create({
+        room: room.trim(),
+        text: text.trim(),
+        senderName: senderName.trim(),
+        senderId: senderId || socket.id,
+      });
 
-  // Convert doc to plain object & normalize createdAt
-  const message = {
-    _id: doc._id.toString(),
-    room: doc.room,
-    text: doc.text,
-    senderName: doc.senderName,
-    senderId: doc.senderId,
-    createdAt: doc.createdAt.toISOString(),
-  };
+      const message = {
+        _id: doc._id.toString(),
+        room: doc.room,
+        text: doc.text,
+        senderName: doc.senderName,
+        senderId: doc.senderId,
+        createdAt: doc.createdAt.toISOString(),
+      };
 
-  // Emit back to everyone (including sender)
-  io.to(room).emit("chatMessage", message);
-});
-
+      io.to(room).emit("chatMessage", message);
+    });
 
     socket.on("disconnect", async () => {
       const left = await leaveUser(socket.id);

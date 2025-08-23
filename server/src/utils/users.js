@@ -1,45 +1,55 @@
 import Redis from "ioredis";
 import dotenv from "dotenv";
 dotenv.config();
-const REDIS_URL = process.env.REDIS_URL;
-const redis = new Redis(REDIS_URL, {
-  retryStrategy(times) {
-    console.error(`Redis retry attempt #${times}`);
-    return Math.min(times * 50, 2000);
-  },
-});
 
-redis.on("connect", () => console.log("✅ Redis connected (users util)"));
-redis.on("error", (err) => console.error("❌ Redis error:", err));
+const REDIS_URL = process.env.REDIS_URL;
+
+// Local fallback storage
+const localUsers = [];
+
+// Redis connection (production)
+let redis;
+if (REDIS_URL) {
+  redis = new Redis(REDIS_URL, {
+    retryStrategy(times) {
+      console.error(`Redis retry attempt #${times}`);
+      return Math.min(times * 50, 2000);
+    },
+  });
+
+  redis.on("connect", () => console.log("✅ Redis connected (users util)"));
+  redis.on("error", (err) => console.error("❌ Redis error:", err));
+}
 
 const USER_PREFIX = "chat:user:";
 const ROOM_PREFIX = "chat:room:";
 
 async function saveUser(user) {
-  try {
+  if (redis) {
     await redis.set(`${USER_PREFIX}${user.id}`, JSON.stringify(user));
     await redis.sadd(`${ROOM_PREFIX}${user.room}`, user.id);
-  } catch (err) {
-    console.error("❌ Redis saveUser error:", err);
+  } else {
+    localUsers.push(user);
   }
 }
 
 async function removeUser(id) {
-  try {
+  if (redis) {
     const userData = await redis.get(`${USER_PREFIX}${id}`);
     if (!userData) return null;
     const user = JSON.parse(userData);
     await redis.del(`${USER_PREFIX}${id}`);
     await redis.srem(`${ROOM_PREFIX}${user.room}`, id);
     return user;
-  } catch (err) {
-    console.error("❌ Redis removeUser error:", err);
-    return null;
+  } else {
+    const index = localUsers.findIndex((u) => u.id === id);
+    if (index === -1) return null;
+    return localUsers.splice(index, 1)[0];
   }
 }
 
 async function getUsersInRoom(room) {
-  try {
+  if (redis) {
     const ids = await redis.smembers(`${ROOM_PREFIX}${room}`);
     if (!ids.length) return [];
     const pipeline = redis.pipeline();
@@ -48,9 +58,8 @@ async function getUsersInRoom(room) {
     return results
       .map(([err, userJSON]) => (userJSON ? JSON.parse(userJSON) : null))
       .filter(Boolean);
-  } catch (err) {
-    console.error("❌ Redis getUsersInRoom error:", err);
-    return [];
+  } else {
+    return localUsers.filter((u) => u.room === room);
   }
 }
 
