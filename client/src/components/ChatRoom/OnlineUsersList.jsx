@@ -2,7 +2,6 @@ import React from "react";
 import { Box, Typography, List, ListItem } from "@mui/material";
 
 const OnlineUsersList = ({ users }) => {
-  // Ensure users is always an array
   const safeUsers = Array.isArray(users) ? users : [];
 
   return (
@@ -16,7 +15,7 @@ const OnlineUsersList = ({ users }) => {
           safeUsers.map((user) => (
             <ListItem key={user.id} sx={{ py: 0.5 }}>
               <Typography variant="body2">
-                {String(user.username)} ({String(user.room)})
+                {user.username} {user.room ? `(${user.room})` : ""}
               </Typography>
             </ListItem>
           ))

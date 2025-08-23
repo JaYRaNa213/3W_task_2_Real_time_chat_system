@@ -1,15 +1,13 @@
 import { Server } from "socket.io";
 import { createAdapter } from "@socket.io/redis-adapter";
-import Redis from "ioredis";
+import { redis, joinUser, leaveUser, getRoomUsers } from "./utils/users.js";
 import Message from "./models/Message.model.js";
-import { joinUser, leaveUser, getRoomUsers, redis } from "./utils/users.js";
 
 export default function createSocketServer(httpServer, corsOrigin) {
   const io = new Server(httpServer, {
     cors: { origin: corsOrigin, methods: ["GET", "POST"] },
   });
 
-  // Use Redis adapter if available
   if (redis) {
     const pubClient = redis;
     const subClient = redis.duplicate();

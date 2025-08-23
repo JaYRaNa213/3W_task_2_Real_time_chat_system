@@ -22,11 +22,8 @@ export default function ChatRoom({ me, room }) {
   const [online, setOnline] = useState([]);
   const [typingUsers, setTypingUsers] = useState([]);
 
-  // Join room & setup listeners
   useEffect(() => {
     if (!socket) return;
-
-    // if (!socket.connected) socket.connect();
 
     socket.emit("joinRoom", { username: me, room });
 
@@ -34,16 +31,15 @@ export default function ChatRoom({ me, room }) {
 
     const onChatMessage = (msg) => {
       setMessages((prev) => {
-        // avoid duplicates (optimistic messages)
         if (prev.some((m) => m._id === msg._id && m.senderName === msg.senderName)) return prev;
         return [...prev, msg];
       });
       scrollToBottom();
     };
 
-    const onOnlineUsers = (list) =>
-  setOnline(list?.map((u) => ({ id: u, username: u })) || []);
-
+    const onOnlineUsers = (list) => {
+      setOnline(Array.isArray(list) ? list : []);
+    };
 
     const onTyping = ({ username, isTyping }) => {
       setTypingUsers((prev) => {
@@ -64,14 +60,9 @@ export default function ChatRoom({ me, room }) {
       socket.off("chatMessage", onChatMessage);
       socket.off("onlineUsers", onOnlineUsers);
       socket.off("typing", onTyping);
-      socket.disconnect();
-      setMessages([]);
-      setOnline([]);
-      setTypingUsers([]);
     };
   }, [room, me, socket]);
 
-  // Scroll helper
   const scrollToBottom = () => {
     setTimeout(() => {
       scrollRef.current?.scrollTo({
@@ -81,27 +72,13 @@ export default function ChatRoom({ me, room }) {
     }, 0);
   };
 
-  // Handle sending message
-  const send = (text) => {
+    const send = (text) => {
     if (!text.trim() || !socket) return;
 
-    const tempId = Date.now().toString();
-    const newMsg = {
-      senderName: me,
-      text,
-      createdAt: new Date().toISOString(),
-      _id: tempId,
-    };
-
-    // Optimistically add
-    setMessages((prev) => [...prev, newMsg]);
-    scrollToBottom();
-
-    // Emit to server
     socket.emit("chatMessage", { room, text, senderName: me });
   };
 
-  // Handle typing indicator
+
   const onTypingChange = (isTyping) => {
     if (!socket) return;
     socket.emit("typing", { room, username: me, isTyping });
@@ -118,7 +95,6 @@ export default function ChatRoom({ me, room }) {
         overflow: "hidden",
       }}
     >
-      {/* Header */}
       <AppBar position="sticky" color="primary" sx={{ borderRadius: 0 }}>
         <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
           <Box>
@@ -131,19 +107,16 @@ export default function ChatRoom({ me, room }) {
         </Toolbar>
       </AppBar>
 
-      {/* Messages */}
       <Box ref={scrollRef} sx={{ flex: 1, overflowY: "auto" }}>
         <MessageList messages={messages} me={me} />
       </Box>
 
-      {/* Typing Indicator */}
       <Box sx={{ px: 2, pb: 1 }}>
         <TypingIndicator typingUsers={typingUsers} />
       </Box>
 
       <Divider />
 
-      {/* Input */}
       <Box sx={{ p: 2, bgcolor: "grey.50" }}>
         <MessageInput onSend={send} onTyping={onTypingChange} />
       </Box>

@@ -43,7 +43,7 @@ const Chat = () => {
               }}
             >
               <Typography variant="h4" sx={{ mb: 2 }}>
-                👋 Welcome, {username}!
+                 Welcome, {username}!
               </Typography>
               <Typography variant="body1" sx={{ mb: 4, color: "text.secondary" }}>
                 Select a room from the left or create one to get started.
@@ -51,12 +51,8 @@ const Chat = () => {
 
               {/* Quick Actions */}
               <Box sx={{ display: "flex", gap: 2, mb: 4 }}>
-                <Button variant="contained" color="primary">
-                  + Create Room
-                </Button>
-                <Button variant="outlined" color="secondary" onClick={() => setRoom("General")}>
-                  Join General
-                </Button>
+               
+                
               </Box>
 
               {/* Dashboard Grid */}
