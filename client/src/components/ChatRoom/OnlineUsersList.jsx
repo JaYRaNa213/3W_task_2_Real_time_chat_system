@@ -9,12 +9,14 @@ const OnlineUsersList = ({ users }) => {
         Online: {users?.length || 0}
       </Typography>
       <List dense sx={{ maxHeight: 200, overflowY: "auto" }}>
-  {(users || []).map((u) => (
-    <ListItem key={u.id || u.username} sx={{ py: 0.2 }}>
-      {u.username || u}
+  {users.map((user) => (
+    <ListItem key={user.id} sx={{ py: 0.5 }}>
+      {user.username} ({user.room})
     </ListItem>
   ))}
 </List>
+
+
 
     </Box>
   );
