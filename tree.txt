@@ -40,12 +40,12 @@
 │       ├── main.jsx
 │       ├── pages
 │       │   ├── Chat.jsx
+│       │   ├── Dashboard.jsx
 │       │   ├── Home.jsx
 │       │   ├── Login.jsx
 │       │   └── Register.jsx
 │       ├── reportWebVitals.js
 │       ├── setupTests.js
-│       ├── socket.js
 │       ├── styles.css
 │       └── utils
 ├── README.md
