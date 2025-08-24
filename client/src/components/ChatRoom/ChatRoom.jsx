@@ -17,7 +17,7 @@ import {
 } from "@mui/material";
 import PeopleIcon from "@mui/icons-material/People";
 
-export default function ChatRoom({ me, room }) {
+export default function ChatRoom({ me, room,onBack }) {
   const socket = useContext(SocketContext);
   const scrollRef = useRef(null);
   const isMobile = useMediaQuery("(max-width:600px)");
@@ -123,11 +123,12 @@ export default function ChatRoom({ me, room }) {
     >
       {/* Header */}
       <AppBar position="sticky" color="#1976d2" sx={{ borderRadius: 0 }}>
+        
         <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
   <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
     <IconButton
       color="inherit"
-      onClick={() => navigate("/chat")} // Goes back to welcome page
+      onClick={onBack} // ✅ goes back to Welcome
       size={isMobile ? "small" : "medium"}
     >
       ←
@@ -146,6 +147,7 @@ export default function ChatRoom({ me, room }) {
     <PeopleIcon />
   </IconButton>
 </Toolbar>
+
 
 
       </AppBar>

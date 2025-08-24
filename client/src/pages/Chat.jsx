@@ -294,7 +294,9 @@ useEffect(() => {
             )}
 
             {room ? (
-              <ChatRoom me={username} room={room} />
+              
+<ChatRoom me={username} room={room} onBack={() => setRoom(null)} />
+
             ) : (
               <Box
                 sx={{
