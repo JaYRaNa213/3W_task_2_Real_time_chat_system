@@ -654,7 +654,7 @@ copies or substantial portions of the Software.
 
 [![GitHub](https://img.shields.io/badge/GitHub-JaYRaNa213-181717?style=for-the-badge&logo=github)](https://github.com/JaYRaNa213)
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-Jay%20Rana-0077B5?style=for-the-badge&logo=linkedin)](https://www.linkedin.com/in/jayrana)
-[![Email](https://img.shields.io/badge/Email-Contact-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:jayrana@example.com)
+[![Email](https://img.shields.io/badge/Email-Contact-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:jayrana0909@gmail.com)
 
 *"Building the future of real-time communication, one message at a time."*
 
@@ -671,7 +671,6 @@ Special thanks to the amazing open-source community and these fantastic tools:
 - **[Material-UI](https://mui.com/)** - Providing beautiful React components
 - **[Node.js](https://nodejs.org/)** - JavaScript runtime built on Chrome's V8 engine
 - **[MongoDB](https://www.mongodb.com/)** - Document-based database for modern applications
-- **[Replit](https://replit.com/)** - Collaborative cloud development platform
 - **[Express.js](https://expressjs.com/)** - Fast, unopinionated web framework for Node.js
 
 ---
@@ -717,11 +716,12 @@ Special thanks to the amazing open-source community and these fantastic tools:
 
 **🚀 Built with ❤️ using React, Node.js, Socket.io, and MongoDB**
 
-**Deployed on [Replit](https://replit.com) - The collaborative cloud development platform**
+**Deployed on [vercel] - The collaborative cloud development platform**
 
 *Star this repository if you found it helpful! ⭐*
 
 ---
 
 </div>
+
 
