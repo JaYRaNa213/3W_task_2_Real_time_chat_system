@@ -48,6 +48,7 @@ import Navbar from "../components/Navbar";
 import RoomsSidebar from "../components/RoomsSidebar";
 import ChatRoom from "../components/ChatRoom/ChatRoom";
 import { useSocket } from "../context/SocketContext";
+import CreateRoomDialog from "../components/CreateRoomButton";
 
 
 const Chat = () => {
@@ -61,8 +62,6 @@ const Chat = () => {
   const [recentRooms, setRecentRooms] = useState([]);
   const [activeRooms, setActiveRooms] = useState({});
   const [unread, setUnread] = useState({});
-  const [openCreate, setOpenCreate] = useState(false);
-  const [newRoomName, setNewRoomName] = useState("");
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -81,21 +80,21 @@ const Chat = () => {
 
   // ---- Manage Online Users ----
   // Listen for online users from backend
-useEffect(() => {
-  if (!socket) return;
+  useEffect(() => {
+    if (!socket) return;
 
-  // always join lobby when connected
-  socket.emit("joinRoom", { username, room: "General" });
+    // always join lobby when connected
+    socket.emit("joinRoom", { username, room: "General" });
 
-  const handleOnlineUsers = (users) => setOnlineUsers(users);
-  socket.on("onlineUsers", handleOnlineUsers);
+    const handleOnlineUsers = (users) => setOnlineUsers(users);
+    socket.on("onlineUsers", handleOnlineUsers);
 
-  return () => {
-    socket.off("onlineUsers", handleOnlineUsers);
-  };
-}, [socket, username]);
+    return () => {
+      socket.off("onlineUsers", handleOnlineUsers);
+    };
+  }, [socket, username]);
 
-  
+
 
   // ---- Load Rooms and Messages ----
   useEffect(() => {
@@ -125,16 +124,7 @@ useEffect(() => {
     if (isMobile) setDrawerOpen(false);
   };
 
-  // ---- Create Room ----
-  const handleCreateRoom = () => {
-    if (!newRoomName.trim()) return;
-    const updated = [newRoomName, ...recentRooms];
-    setRecentRooms(updated);
-    localStorage.setItem(ROOMS_KEY, JSON.stringify(updated));
-    setOpenCreate(false);
-    setNewRoomName("");
-    joinRoom(newRoomName);
-  };
+
 
   // ---- Fake Notifications ----
   useEffect(() => {
@@ -154,7 +144,7 @@ useEffect(() => {
   // Get user avatar color
   const getAvatarColor = (name) => {
     const colors = [
-      "#FF6B6B", "#4ECDC4", "#45B7D1", "#96CEB4", "#FFEAA7", 
+      "#FF6B6B", "#4ECDC4", "#45B7D1", "#96CEB4", "#FFEAA7",
       "#DDA0DD", "#98D8C8", "#F7DC6F", "#BB8FCE", "#85C1E9"
     ];
     const index = name.charCodeAt(0) % colors.length;
@@ -163,12 +153,12 @@ useEffect(() => {
 
   if (isLoading) {
     return (
-      <Box 
-        sx={{ 
-          display: "flex", 
-          flexDirection: "column", 
-          alignItems: "center", 
-          justifyContent: "center", 
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
           height: "100vh",
           background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
         }}
@@ -178,16 +168,16 @@ useEffect(() => {
           <Typography variant="h4" sx={{ mb: 2, fontWeight: "bold" }}>
             Loading Chat...
           </Typography>
-          <LinearProgress 
-            sx={{ 
-              width: 300, 
-              height: 8, 
+          <LinearProgress
+            sx={{
+              width: 300,
+              height: 8,
               borderRadius: 4,
               backgroundColor: alpha("#fff", 0.3),
               "& .MuiLinearProgress-bar": {
                 backgroundColor: "#fff"
               }
-            }} 
+            }}
           />
         </Box>
       </Box>
@@ -195,9 +185,9 @@ useEffect(() => {
   }
 
   return (
-    <Box sx={{ 
-      display: "flex", 
-      flexDirection: "column", 
+    <Box sx={{
+      display: "flex",
+      flexDirection: "column",
       height: "100vh",
       background: "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)"
     }}>
@@ -251,7 +241,7 @@ useEffect(() => {
                   right: 0,
                   bottom: 0,
                   background: "rgba(255,255,255,0.05)"
-                  
+
                 }
               }}
             >
@@ -280,7 +270,7 @@ useEffect(() => {
               <Box sx={{ p: 2, borderBottom: "1px solid rgba(0,0,0,0.1)" }}>
                 <IconButton
                   onClick={() => setDrawerOpen(true)}
-                  sx={{ 
+                  sx={{
                     background: "linear-gradient(45deg, #667eea, #764ba2)",
                     color: "white",
                     "&:hover": {
@@ -294,8 +284,8 @@ useEffect(() => {
             )}
 
             {room ? (
-              
-<ChatRoom me={username} room={room} onBack={() => setRoom(null)} />
+
+              <ChatRoom me={username} room={room} onBack={() => setRoom(null)} />
 
             ) : (
               <Box
@@ -328,9 +318,9 @@ useEffect(() => {
                     >
                       {username.charAt(0).toUpperCase()}
                     </Avatar>
-                    <Typography 
-                      variant="h3" 
-                      sx={{ 
+                    <Typography
+                      variant="h3"
+                      sx={{
                         fontWeight: "bold",
                         background: "linear-gradient(45deg, #667eea, #764ba2)",
                         backgroundClip: "text",
@@ -351,41 +341,26 @@ useEffect(() => {
                 </Zoom>
 
                 {/* Quick Actions */}
+                {/* Quick Actions */}
                 <Slide direction="up" in={true} timeout={1200}>
                   <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, gap: 3 }}>
-                    <Button
-                      variant="contained"
-                      size="large"
-                      startIcon={<AddIcon />}
-                      onClick={() => setOpenCreate(true)}
-                      sx={{
-                        background: "linear-gradient(45deg, #667eea, #764ba2)",
-                        borderRadius: 3,
-                        px: 4,
-                        py: 1.5,
-                        fontSize: "1.1rem",
-                        fontWeight: "bold",
-                        boxShadow: "0 10px 30px rgba(102, 126, 234, 0.4)",
-                        "&:hover": {
-                          background: "linear-gradient(45deg, #764ba2, #667eea)",
-                          transform: "translateY(-2px)",
-                          boxShadow: "0 15px 35px rgba(102, 126, 234, 0.6)"
-                        },
-                        transition: "all 0.3s ease"
+                    <CreateRoomDialog
+                      onRoomCreated={(roomName) => {
+                        setRecentRooms((prev) => {
+                          const updated = [roomName, ...prev];
+                          localStorage.setItem("chat_rooms", JSON.stringify(updated));
+                          return updated;
+                        });
+                        joinRoom(roomName);
                       }}
-                    >
-                      Create Room
-                    </Button>
+                    />
                     <Button
                       variant="outlined"
                       size="large"
                       startIcon={<CasinoIcon />}
                       onClick={() => {
                         if (recentRooms.length > 0) {
-                          const rand =
-                            recentRooms[
-                              Math.floor(Math.random() * recentRooms.length)
-                            ];
+                          const rand = recentRooms[Math.floor(Math.random() * recentRooms.length)];
                           joinRoom(rand);
                         }
                       }}
@@ -413,6 +388,7 @@ useEffect(() => {
                   </Box>
                 </Slide>
 
+
                 {/* Dashboard Grid */}
                 <Fade in={true} timeout={1500}>
                   <Grid
@@ -423,45 +399,42 @@ useEffect(() => {
                     sx={{ mt: 2 }}
                   >
                     {/* Online Users Card */}
-                    <Grid item xs={12} md={4}>
-                      <Card 
-  sx={{ 
-    borderRadius: 4,
-    background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-    color: "white",
-    boxShadow: "0 20px 40px rgba(102, 126, 234, 0.3)",
-    transition: "transform 0.3s ease",
-    "&:hover": {
-      transform: "translateY(-8px)",
-      boxShadow: "0 25px 50px rgba(102, 126, 234, 0.4)"
-    }
-  }}
->
-  <CardContent sx={{ p: 3 }}>
-    <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-      <Avatar sx={{ bgcolor: "rgba(255,255,255,0.2)", mr: 2 }}>
-        <PeopleIcon />
-      </Avatar>
-      <Typography variant="h6" fontWeight="bold">
-        Online Users
-      </Typography>
-    </Box>
-    
-    {/* ✅ only count */}
-    <Typography variant="h3" fontWeight="bold">
-      {onlineUsers.length}
-    </Typography>
-  </CardContent>
-</Card>
+                    <Grid item xs={12} md={6}>
+                      <Card
+                        sx={{
+                          borderRadius: 4,
+                          background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                          color: "white",
+                          boxShadow: "0 20px 40px rgba(102, 126, 234, 0.3)",
+                          transition: "transform 0.3s ease",
+                          "&:hover": {
+                            transform: "translateY(-8px)",
+                            boxShadow: "0 25px 50px rgba(102, 126, 234, 0.4)",
+                          },
+                        }}
+                      >
+                        <CardContent sx={{ p: 3 }}>
+                          <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+                            <Avatar sx={{ bgcolor: "rgba(255,255,255,0.2)", mr: 2 }}>
+                              <PeopleIcon />
+                            </Avatar>
+                            <Typography variant="h6" fontWeight="bold">
+                              Online Users
+                            </Typography>
+                          </Box>
 
-
-
+                          {/* ✅ only count */}
+                          <Typography variant="h3" fontWeight="bold">
+                            {onlineUsers.length}
+                          </Typography>
+                        </CardContent>
+                      </Card>
                     </Grid>
 
                     {/* Recent Rooms Card */}
-                    <Grid item xs={12} md={4}>
-                      <Card 
-                        sx={{ 
+                    <Grid item xs={12} md={6}>
+                      <Card
+                        sx={{
                           borderRadius: 4,
                           background: "linear-gradient(135deg, #4CAF50 0%, #45a049 100%)",
                           color: "white",
@@ -469,8 +442,8 @@ useEffect(() => {
                           transition: "transform 0.3s ease",
                           "&:hover": {
                             transform: "translateY(-8px)",
-                            boxShadow: "0 25px 50px rgba(76, 175, 80, 0.4)"
-                          }
+                            boxShadow: "0 25px 50px rgba(76, 175, 80, 0.4)",
+                          },
                         }}
                       >
                         <CardContent sx={{ p: 3 }}>
@@ -482,10 +455,10 @@ useEffect(() => {
                               Recent Rooms
                             </Typography>
                           </Box>
-                          
+
                           <Divider sx={{ bgcolor: "rgba(255,255,255,0.3)", mb: 2 }} />
-                          
-                          <List dense sx={{ maxHeight: 240, overflowY: "auto" }}>
+
+                          <List dense sx={{ maxHeight: 200, overflowY: "auto" }}>
                             {recentRooms.map((roomName, idx) => (
                               <ListItem
                                 key={idx}
@@ -495,8 +468,8 @@ useEffect(() => {
                                   borderRadius: 2,
                                   mb: 1,
                                   "&:hover": {
-                                    bgcolor: "rgba(255,255,255,0.1)"
-                                  }
+                                    bgcolor: "rgba(255,255,255,0.1)",
+                                  },
                                 }}
                               >
                                 <RoomIcon sx={{ mr: 2, fontSize: 20 }} />
@@ -505,70 +478,16 @@ useEffect(() => {
                                   badgeContent={unread[roomName] || 0}
                                   invisible={!unread[roomName]}
                                 >
-                                  <ListItemText 
+                                  <ListItemText
                                     primary={roomName}
                                     primaryTypographyProps={{ fontWeight: 500 }}
                                   />
                                 </Badge>
                               </ListItem>
                             ))}
-                          </List>
-                        </CardContent>
-                      </Card>
-                    </Grid>
-
-                    {/* Active Rooms Card */}
-                    <Grid item xs={12} md={4}>
-                      <Card 
-                        sx={{ 
-                          borderRadius: 4,
-                          background: "linear-gradient(135deg, #FF9800 0%, #F57C00 100%)",
-                          color: "white",
-                          boxShadow: "0 20px 40px rgba(255, 152, 0, 0.3)",
-                          transition: "transform 0.3s ease",
-                          "&:hover": {
-                            transform: "translateY(-8px)",
-                            boxShadow: "0 25px 50px rgba(255, 152, 0, 0.4)"
-                          }
-                        }}
-                      >
-                        {/* <CardContent sx={{ p: 3 }}>
-                          <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-                            <Avatar sx={{ bgcolor: "rgba(255,255,255,0.2)", mr: 2 }}>
-                              <MessageIcon />
-                            </Avatar>
-                            <Typography variant="h6" fontWeight="bold">
-                              Room Activity
-                            </Typography>
-                          </Box>
-                          
-                          <Divider sx={{ bgcolor: "rgba(255,255,255,0.3)", mb: 2 }} />
-                          
-                          <List dense sx={{ maxHeight: 240, overflowY: "auto" }}>
-                            {Object.entries(activeRooms).map(([roomName, count]) => (
-                              <ListItem key={roomName} sx={{ px: 0 }}>
-                                <MessageIcon sx={{ mr: 2, fontSize: 20 }} />
-                                <ListItemText
-                                  primary={roomName}
-                                  secondary={
-                                    <Chip
-                                      label={`${count} messages`}
-                                      size="small"
-                                      sx={{
-                                        bgcolor: "rgba(255,255,255,0.2)",
-                                        color: "white",
-                                        mt: 1
-                                      }}
-                                    />
-                                  }
-                                  primaryTypographyProps={{ fontWeight: 500 }}
-                                  secondaryTypographyProps={{ color: "inherit" }}
-                                />
-                              </ListItem>
-                            ))}
-                          </List>
-                        </CardContent> */}
-                      </Card>
+</List>
+</CardContent>
+</Card>
                     </Grid>
                   </Grid>
                 </Fade>
@@ -577,76 +496,11 @@ useEffect(() => {
           </Paper>
         </Fade>
       </Box>
-
-      {/* Enhanced Create Room Dialog */}
-      <Dialog 
-        open={openCreate} 
-        onClose={() => setOpenCreate(false)}
-        PaperProps={{
-          sx: {
-            borderRadius: 4,
-            background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-            color: "white",
-            minWidth: 400
-          }
-        }}
-      >
-        <DialogTitle sx={{ 
-          textAlign: "center", 
-          fontSize: "1.5rem", 
-          fontWeight: "bold",
-          pb: 1
-        }}>
-          <Avatar sx={{ mx: "auto", mb: 2, bgcolor: "rgba(255,255,255,0.2)" }}>
-            <AddIcon />
-          </Avatar>
-          Create New Room
-        </DialogTitle>
-        <DialogContent sx={{ pb: 1 }}>
-          <TextField
-            autoFocus
-            fullWidth
-            margin="dense"
-            label="Room Name"
-            variant="outlined"
-            value={newRoomName}
-            onChange={(e) => setNewRoomName(e.target.value)}
-            sx={{
-              "& .MuiOutlinedInput-root": {
-                "& fieldset": { borderColor: "rgba(255,255,255,0.5)" },
-                "&:hover fieldset": { borderColor: "rgba(255,255,255,0.8)" },
-                "&.Mui-focused fieldset": { borderColor: "white" },
-                color: "white"
-              },
-              "& .MuiInputLabel-root": { color: "rgba(255,255,255,0.8)" },
-              "& .MuiInputLabel-root.Mui-focused": { color: "white" }
-            }}
-          />
-        </DialogContent>
-        <DialogActions sx={{ p: 3, pt: 2 }}>
-          <Button 
-            onClick={() => setOpenCreate(false)}
-            sx={{ 
-              color: "white",
-              "&:hover": { bgcolor: "rgba(255,255,255,0.1)" }
-            }}
-          >
-            Cancel
-          </Button>
-          <Button 
-            onClick={handleCreateRoom} 
-            variant="contained"
-            sx={{
-              bgcolor: "rgba(255,255,255,0.2)",
-              "&:hover": { bgcolor: "rgba(255,255,255,0.3)" }
-            }}
-          >
-            Create Room
-          </Button>
-        </DialogActions>
-      </Dialog>
     </Box>
   );
 };
 
 export default Chat;
+
+
+         
