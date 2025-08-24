@@ -1,4 +1,4 @@
-﻿
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/0b7ce567-2810-4593-b9ac-ec1af393511e" />﻿
 # 3W Real-Time Chat Website
 
 <div align="center">
@@ -41,6 +41,9 @@
 ## 🎯 Project Overview
 
 **3W Real-Time Chat** is a modern, full-featured chat application that provides seamless real-time communication experience. Built with cutting-edge technologies, it offers both authenticated user experience and guest access functionality.
+
+
+<img src="./img/chat.png" alt="contextSwap" width="900" />
 
 ### Key Capabilities
 
@@ -723,6 +726,7 @@ Special thanks to the amazing open-source community and these fantastic tools:
 ---
 
 </div>
+
 
 
 
