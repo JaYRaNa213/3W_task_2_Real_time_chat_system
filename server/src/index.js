@@ -6,16 +6,21 @@ import mongoose from "mongoose";
 import morgan from "morgan";
 import Redis from "ioredis";
 import dotenv from "dotenv";
-import {authMiddleware }from "./middleware/auth.js";
+import { authMiddleware } from "./middleware/auth.js";
 import createSocketServer from "./socket.js";
 import roomsRouter from "./routes/rooms.route.js";
 import messagesRouter from "./routes/messages.route.js";
-import authRouter from "./routes/auth.route.js"; // 
+import authRouter from "./routes/auth.route.js";
 
 dotenv.config();
 
 const PORT = process.env.PORT || 5000;
-const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || "http://localhost:3000";
+
+// ✅ Allow multiple origins (local + deployed frontend)
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://real-time-chat-system-lyart.vercel.app",
+];
 
 const MONGO_URI =
   process.env.MONGO_URI ||
@@ -33,25 +38,40 @@ const redis = new Redis(REDIS_URL, {
   },
 });
 
-
 redis.on("connect", () => console.log("✅ Redis connected"));
 redis.on("error", (err) => console.error("❌ Redis error:", err));
 
 const app = express();
 app.use(express.json());
-app.use(cors({ origin: CLIENT_ORIGIN }));
+
+// ✅ CORS config with whitelist
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+  })
+);
+
 app.use(morgan("dev"));
 
+// Health check
 app.get("/", (_req, res) => res.json({ ok: true, service: "chat-server" }));
 
 // Routes
 app.use("/api/rooms", roomsRouter);
-app.use("/api/messages",authMiddleware, messagesRouter);
-
-app.use("/api/auth", authRouter); 
+app.use("/api/messages", authMiddleware, messagesRouter);
+app.use("/api/auth", authRouter);
 
 const server = http.createServer(app);
-createSocketServer(server, CLIENT_ORIGIN);
+
+// ✅ Pass allowedOrigins to socket server
+createSocketServer(server, allowedOrigins);
 
 mongoose
   .connect(MONGO_URI)
@@ -59,7 +79,7 @@ mongoose
     console.log("✅ MongoDB connected");
     server.listen(PORT, () => {
       console.log(`🚀 Server listening on http://localhost:${PORT}`);
-      console.log(`🌐 Allowed client origin: ${CLIENT_ORIGIN}`);
+      console.log(`🌐 Allowed client origins: ${allowedOrigins.join(", ")}`);
     });
   })
   .catch((err) => {
