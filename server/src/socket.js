@@ -1,3 +1,4 @@
+// socket.js
 import { Server } from "socket.io";
 import { createAdapter } from "@socket.io/redis-adapter";
 import { redis, joinUser, leaveUser, getRoomUsers } from "./utils/users.js";
@@ -8,6 +9,7 @@ export default function createSocketServer(httpServer, corsOrigin) {
     cors: { origin: corsOrigin, methods: ["GET", "POST"] },
   });
 
+  // Setup Redis adapter if Redis is available
   if (redis) {
     const pubClient = redis;
     const subClient = redis.duplicate();
@@ -18,8 +20,9 @@ export default function createSocketServer(httpServer, corsOrigin) {
   }
 
   io.on("connection", (socket) => {
-    console.log("User connected:", socket.id);
+    console.log("🔌 User connected:", socket.id);
 
+    // Join room
     socket.on("joinRoom", async ({ username, room }) => {
       username = String(username || "").trim();
       room = String(room || "").trim();
@@ -38,6 +41,7 @@ export default function createSocketServer(httpServer, corsOrigin) {
         createdAt: new Date().toISOString(),
       });
 
+      // Send last 50 messages
       const messages = await Message.find({ room })
         .sort({ createdAt: -1 })
         .limit(50)
@@ -45,6 +49,7 @@ export default function createSocketServer(httpServer, corsOrigin) {
       socket.emit("loadHistory", messages.reverse());
     });
 
+    // Handle chat messages
     socket.on("chatMessage", async ({ room, text, senderName, senderId }) => {
       if (!text?.trim() || !room?.trim() || !senderName?.trim()) return;
 
@@ -67,10 +72,12 @@ export default function createSocketServer(httpServer, corsOrigin) {
       io.to(room).emit("chatMessage", message);
     });
 
+    // Handle disconnect
     socket.on("disconnect", async () => {
       const left = await leaveUser(socket.id);
       if (left?.room) {
         const { room, username } = left;
+
         const onlineUsers = await getRoomUsers(room);
         io.to(room).emit("onlineUsers", onlineUsers);
 
