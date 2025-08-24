@@ -648,12 +648,12 @@ copies or substantial portions of the Software.
 
 <div align="center">
 
-**Jay Rana**
+**Jay Prakash**
 
 *Full-Stack Developer & Open Source Enthusiast*
 
 [![GitHub](https://img.shields.io/badge/GitHub-JaYRaNa213-181717?style=for-the-badge&logo=github)](https://github.com/JaYRaNa213)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Jay%20Rana-0077B5?style=for-the-badge&logo=linkedin)](https://www.linkedin.com/in/jayrana)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Jay%20Rana-0077B5?style=for-the-badge&logo=linkedin)](https://www.linkedin.com/in/jay-prakash-367538313/)
 [![Email](https://img.shields.io/badge/Email-Contact-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:jayrana0909@gmail.com)
 
 *"Building the future of real-time communication, one message at a time."*
@@ -723,5 +723,6 @@ Special thanks to the amazing open-source community and these fantastic tools:
 ---
 
 </div>
+
 
 
