@@ -47,6 +47,8 @@ import { useLocation } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import RoomsSidebar from "../components/RoomsSidebar";
 import ChatRoom from "../components/ChatRoom/ChatRoom";
+import { useSocket } from "../context/SocketContext";
+
 
 const Chat = () => {
   const theme = useTheme();
@@ -65,6 +67,7 @@ const Chat = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   const isMobile = useMediaQuery("(max-width:768px)");
+  const socket = useSocket();
 
   const USERS_KEY = "chat_online_users";
   const ROOMS_KEY = "chat_rooms";
@@ -77,26 +80,22 @@ const Chat = () => {
   }, []);
 
   // ---- Manage Online Users ----
-  useEffect(() => {
-    let users = JSON.parse(localStorage.getItem(USERS_KEY)) || [];
-    if (!users.includes(username)) {
-      users.push(username);
-      localStorage.setItem(USERS_KEY, JSON.stringify(users));
-    }
-    setOnlineUsers(users);
+  // Listen for online users from backend
+useEffect(() => {
+  if (!socket) return;
 
-    const syncUsers = () => {
-      setOnlineUsers(JSON.parse(localStorage.getItem(USERS_KEY)) || []);
-    };
-    window.addEventListener("storage", syncUsers);
+  // always join lobby when connected
+  socket.emit("joinRoom", { username, room: "General" });
 
-    return () => {
-      users = JSON.parse(localStorage.getItem(USERS_KEY)) || [];
-      users = users.filter((u) => u !== username);
-      localStorage.setItem(USERS_KEY, JSON.stringify(users));
-      window.removeEventListener("storage", syncUsers);
-    };
-  }, [username]);
+  const handleOnlineUsers = (users) => setOnlineUsers(users);
+  socket.on("onlineUsers", handleOnlineUsers);
+
+  return () => {
+    socket.off("onlineUsers", handleOnlineUsers);
+  };
+}, [socket, username]);
+
+  
 
   // ---- Load Rooms and Messages ----
   useEffect(() => {
@@ -424,58 +423,37 @@ const Chat = () => {
                     {/* Online Users Card */}
                     <Grid item xs={12} md={4}>
                       <Card 
-                        sx={{ 
-                          borderRadius: 4,
-                          background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                          color: "white",
-                          boxShadow: "0 20px 40px rgba(102, 126, 234, 0.3)",
-                          transition: "transform 0.3s ease",
-                          "&:hover": {
-                            transform: "translateY(-8px)",
-                            boxShadow: "0 25px 50px rgba(102, 126, 234, 0.4)"
-                          }
-                        }}
-                      >
-                        <CardContent sx={{ p: 3 }}>
-                          <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-                            <Avatar sx={{ bgcolor: "rgba(255,255,255,0.2)", mr: 2 }}>
-                              <PeopleIcon />
-                            </Avatar>
-                            <Typography variant="h6" fontWeight="bold">
-                              Online Users
-                            </Typography>
-                          </Box>
-                          
-                          <Typography variant="h3" fontWeight="bold" sx={{ mb: 2 }}>
-                            {onlineUsers.length}
-                          </Typography>
-                          
-                          <Divider sx={{ bgcolor: "rgba(255,255,255,0.3)", mb: 2 }} />
-                          
-                          <List dense sx={{ maxHeight: 200, overflowY: "auto" }}>
-                            {onlineUsers.map((user, idx) => (
-                              <ListItem key={idx} sx={{ px: 0 }}>
-                                <Avatar 
-                                  sx={{ 
-                                    width: 32, 
-                                    height: 32, 
-                                    bgcolor: getAvatarColor(user),
-                                    mr: 2,
-                                    fontSize: "0.9rem"
-                                  }}
-                                >
-                                  {user.charAt(0).toUpperCase()}
-                                </Avatar>
-                                <ListItemText 
-                                  primary={user}
-                                  primaryTypographyProps={{ fontWeight: 500 }}
-                                />
-                                <CircleIcon sx={{ fontSize: 12, color: "#4CAF50" }} />
-                              </ListItem>
-                            ))}
-                          </List>
-                        </CardContent>
-                      </Card>
+  sx={{ 
+    borderRadius: 4,
+    background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+    color: "white",
+    boxShadow: "0 20px 40px rgba(102, 126, 234, 0.3)",
+    transition: "transform 0.3s ease",
+    "&:hover": {
+      transform: "translateY(-8px)",
+      boxShadow: "0 25px 50px rgba(102, 126, 234, 0.4)"
+    }
+  }}
+>
+  <CardContent sx={{ p: 3 }}>
+    <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+      <Avatar sx={{ bgcolor: "rgba(255,255,255,0.2)", mr: 2 }}>
+        <PeopleIcon />
+      </Avatar>
+      <Typography variant="h6" fontWeight="bold">
+        Online Users
+      </Typography>
+    </Box>
+    
+    {/* ✅ only count */}
+    <Typography variant="h3" fontWeight="bold">
+      {onlineUsers.length}
+    </Typography>
+  </CardContent>
+</Card>
+
+
+
                     </Grid>
 
                     {/* Recent Rooms Card */}
@@ -552,7 +530,7 @@ const Chat = () => {
                           }
                         }}
                       >
-                        <CardContent sx={{ p: 3 }}>
+                        {/* <CardContent sx={{ p: 3 }}>
                           <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
                             <Avatar sx={{ bgcolor: "rgba(255,255,255,0.2)", mr: 2 }}>
                               <MessageIcon />
@@ -587,7 +565,7 @@ const Chat = () => {
                               </ListItem>
                             ))}
                           </List>
-                        </CardContent>
+                        </CardContent> */}
                       </Card>
                     </Grid>
                   </Grid>

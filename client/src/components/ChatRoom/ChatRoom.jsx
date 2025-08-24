@@ -2,6 +2,7 @@ import { useContext, useEffect, useRef, useState } from "react";
 import MessageInput from "./MessageInput";
 import TypingIndicator from "./TypingIndicator";
 import { SocketContext } from "../../context/SocketContext";
+import { useNavigate } from "react-router-dom"; // if React Router
 import {
   Box,
   Typography,
@@ -24,6 +25,10 @@ export default function ChatRoom({ me, room }) {
   const [messages, setMessages] = useState([]);
   const [online, setOnline] = useState([]);
   const [typingUsers, setTypingUsers] = useState([]);
+  
+  const navigate = useNavigate();
+
+
   const [sidebarOpen, setSidebarOpen] = useState(!isMobile);
 
   useEffect(() => {
@@ -119,20 +124,30 @@ export default function ChatRoom({ me, room }) {
       {/* Header */}
       <AppBar position="sticky" color="#1976d2" sx={{ borderRadius: 0 }}>
         <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
-          <Box>
-            <Typography variant={isMobile ? "subtitle1" : "h6"}>#{room}</Typography>
-            <Typography variant="body2" sx={{ opacity: 0.8, fontSize: isMobile ? 12 : "inherit" }}>
-              Signed in as {me}
-            </Typography>
-          </Box>
-          <IconButton
-            color="inherit"
-            onClick={() => setSidebarOpen((prev) => !prev)}
-            size={isMobile ? "small" : "medium"}
-          >
-            <PeopleIcon />
-          </IconButton>
-        </Toolbar>
+  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+    <IconButton
+      color="inherit"
+      onClick={() => navigate("/chat")} // Goes back to welcome page
+      size={isMobile ? "small" : "medium"}
+    >
+      ←
+    </IconButton>
+    <Typography variant={isMobile ? "subtitle1" : "h6"}>#{room}</Typography>
+    <Typography variant="body2" sx={{ opacity: 0.8, fontSize: isMobile ? 12 : "inherit" }}>
+      Signed in as {me}
+    </Typography>
+  </Box>
+
+  <IconButton
+    color="inherit"
+    onClick={() => setSidebarOpen((prev) => !prev)}
+    size={isMobile ? "small" : "medium"}
+  >
+    <PeopleIcon />
+  </IconButton>
+</Toolbar>
+
+
       </AppBar>
 
       {/* Main content */}

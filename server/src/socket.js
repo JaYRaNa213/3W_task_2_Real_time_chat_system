@@ -28,9 +28,15 @@ export default function createSocketServer(httpServer, corsOrigin) {
       room = String(room || "").trim();
       if (!username || !room) return;
 
+      // Force unique guest names if duplicate
+      if (username.toLowerCase() === "guest") {
+        username = `Guest-${socket.id.slice(0, 5)}`;
+      }
+
       socket.join(room);
       await joinUser(socket.id, username, room);
 
+      // Emit updated users
       const onlineUsers = await getRoomUsers(room);
       io.to(room).emit("onlineUsers", onlineUsers);
 

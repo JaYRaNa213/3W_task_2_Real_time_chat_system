@@ -6,7 +6,7 @@ dotenv.config();
 const REDIS_URL = process.env.REDIS_URL;
 
 // Local fallback storage (in-memory)
-const localUsers = [];
+let localUsers = [];
 
 // Redis connection (production)
 let redis;
@@ -29,9 +29,12 @@ const ROOM_PREFIX = "chat:room:";
 // Save user to Redis or fallback
 async function saveUser(user) {
   if (redis) {
+    // overwrite user if already exists
     await redis.set(`${USER_PREFIX}${user.id}`, JSON.stringify(user));
     await redis.sadd(`${ROOM_PREFIX}${user.room}`, user.id);
   } else {
+    // remove any existing same id (avoid duplicates)
+    localUsers = localUsers.filter((u) => u.id !== user.id);
     localUsers.push(user);
   }
 }
@@ -65,6 +68,7 @@ async function getUsersInRoom(room) {
     ids.forEach((id) => pipeline.get(`${USER_PREFIX}${id}`));
     const results = await pipeline.exec();
 
+    // filter out nulls and stale ids
     return results
       .map(([err, userJSON]) => (userJSON ? JSON.parse(userJSON) : null))
       .filter(Boolean);
