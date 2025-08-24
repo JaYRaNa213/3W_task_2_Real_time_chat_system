@@ -1,3 +1,4 @@
+// components/Navbar.jsx
 import React, { useState } from "react";
 import {
   AppBar,
@@ -19,15 +20,30 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const username = localStorage.getItem("username");
   const [drawerOpen, setDrawerOpen] = useState(false);
+
+  // Get username and guest flag from localStorage
+  const username = localStorage.getItem("username");
+  const isGuest = localStorage.getItem("guest") === "true";
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
+  // Logout function (clears all user info)
   const handleLogout = () => {
     localStorage.removeItem("username");
+    localStorage.removeItem("guest");
     navigate("/login");
+  };
+
+  // Optional: Switch guest to a new guest user
+  const handleSwitchGuest = () => {
+    localStorage.removeItem("username");
+    localStorage.removeItem("guest");
+    const newGuest = `G${Math.floor(1000 + Math.random() * 9000)}`;
+    localStorage.setItem("username", newGuest);
+    localStorage.setItem("guest", "true");
+    navigate("/chat");
   };
 
   const navItems = [
@@ -63,7 +79,8 @@ const Navbar = () => {
                 </Button>
               ))}
 
-              {username && (
+              {/* Registered user logout */}
+              {username && !isGuest && (
                 <>
                   <Typography
                     variant="body1"
@@ -75,6 +92,16 @@ const Navbar = () => {
                     Logout
                   </Button>
                 </>
+              )}
+
+              {/* Guest display */}
+              {isGuest && (
+                <Typography
+                  variant="body1"
+                  sx={{ mr: 2, ml: 2, fontWeight: "bold" }}
+                >
+                  {username} (Guest)
+                </Typography>
               )}
             </Box>
           )}
@@ -120,7 +147,8 @@ const Navbar = () => {
               </ListItem>
             ))}
 
-            {username && (
+            {/* Registered user logout */}
+            {username && !isGuest && (
               <>
                 <Divider />
                 <ListItem>
@@ -134,6 +162,19 @@ const Navbar = () => {
                   }}
                 >
                   <ListItemText primary="Logout" />
+                </ListItem>
+              </>
+            )}
+
+            {/* Guest display */}
+            {isGuest && (
+              <>
+                <Divider />
+                <ListItem>
+                  <ListItemText primary={`${username} (Guest)`} />
+                </ListItem>
+                <ListItem button onClick={handleSwitchGuest}>
+                  <ListItemText primary="Switch Guest" />
                 </ListItem>
               </>
             )}

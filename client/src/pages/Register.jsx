@@ -2,8 +2,9 @@
 import React, { useState } from 'react';
 import { Box, Typography, TextField, Button, Stack, Snackbar, Alert } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-
+// import axios from 'axios';
+import http from '../api/http';
+import Navbar from '../components/Navbar';
 const Register = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({ username: '', password: '' });
@@ -17,15 +18,14 @@ const Register = () => {
     e.preventDefault();
     setError('');
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/register', formData);
+      const res = await http.post('/api/auth/register', formData);
 
-      // ✅ Auto login: store user in localStorage
+     
       localStorage.setItem('username', res.data.username);
 
-      // ✅ Show success toast
       setSuccess(true);
 
-      // ✅ Delay a bit so toast is visible, then navigate
+      
       setTimeout(() => {
         navigate('/chat', { state: { username: res.data.username } });
       }, 1200);
@@ -35,6 +35,8 @@ const Register = () => {
   };
 
   return (
+    <>
+    <Navbar/>
     <Box
       sx={{
         minHeight: '100vh',
@@ -77,7 +79,6 @@ const Register = () => {
         </Stack>
       </Box>
 
-      {/* ✅ Success Toast */}
       <Snackbar
         open={success}
         autoHideDuration={1000}
@@ -89,6 +90,7 @@ const Register = () => {
         </Alert>
       </Snackbar>
     </Box>
+    </>
   );
 };
 

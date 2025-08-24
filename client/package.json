@@ -1,8 +1,7 @@
 {
   "name": "client",
   "version": "0.1.0",
-  "main":"index.js",
-  
+  "main": "index.js",
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
@@ -21,6 +20,7 @@
     "react-router-dom": "^7.8.1",
     "react-scripts": "^5.0.1",
     "socket.io-client": "^4.8.1",
+    "uuid": "^11.1.0",
     "web-vitals": "^2.1.4"
   },
   "scripts": {

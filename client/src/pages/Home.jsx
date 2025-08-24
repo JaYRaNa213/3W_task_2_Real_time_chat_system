@@ -10,12 +10,17 @@ import Navbar from "../components/Navbar";
 const Home = () => {
   const navigate = useNavigate();
 
+  const handleContinueAsGuest = () => {
+    const guestName = `G${Math.floor(1000 + Math.random() * 9000)}`;
+    localStorage.setItem("username", guestName);
+    localStorage.setItem("guest", "true");
+    navigate("/chat");
+  };
+
   return (
     <Box sx={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
-      {/* Navbar */}
       <Navbar />
 
-      {/* Main Content */}
       <Box
         sx={{
           flex: 1,
@@ -28,7 +33,6 @@ const Home = () => {
           py: 4,
         }}
       >
-        {/* Header */}
         <Box textAlign="center" mb={4}>
           <Typography variant="h3" component="h1" fontWeight="bold" gutterBottom>
             3W Real Time Chat
@@ -44,7 +48,6 @@ const Home = () => {
           </Typography>
         </Box>
 
-        {/* Feature Cards */}
         <Grid container spacing={3} justifyContent="center" mb={4}>
           <Grid item xs={12} sm={4}>
             <Card sx={{ p: 3, textAlign: "center", borderRadius: 2 }}>
@@ -77,20 +80,13 @@ const Home = () => {
                 Guest Access
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Jump right in without registration or create an account for
-                personalization
+                Jump right in without registration or create an account for personalization
               </Typography>
             </Card>
           </Grid>
         </Grid>
 
-        {/* Actions */}
-        <Stack
-          direction={{ xs: "column", sm: "row" }}
-          spacing={2}
-          mb={3}
-          alignItems="center"
-        >
+        <Stack direction={{ xs: "column", sm: "row" }} spacing={2} mb={3} alignItems="center">
           <Button
             variant="contained"
             color="primary"
@@ -99,6 +95,7 @@ const Home = () => {
           >
             Login
           </Button>
+
           <Button
             variant="outlined"
             color="primary"
@@ -107,25 +104,19 @@ const Home = () => {
           >
             Register
           </Button>
-         <Button
-  variant="contained"
-  onClick={() => {
-    const guestName = `Guest_${Date.now()}`;
-    localStorage.setItem("username", guestName);
-    navigate("/chat");
-  }}
-  sx={{
-    minWidth: 150,
-    bgcolor: "#1e1e2f",
-    "&:hover": { bgcolor: "#35355d" },
-  }}
->
-  Continue as Guest
-</Button>
 
+          <Button
+            variant="contained"
+            onClick={handleContinueAsGuest}
+            sx={{
+              minWidth: 150,
+              bgcolor: "#1e1e2f",
+              "&:hover": { bgcolor: "#35355d" },
+            }}
+          >
+            Continue as Guest
+          </Button>
         </Stack>
-
-       
       </Box>
     </Box>
   );

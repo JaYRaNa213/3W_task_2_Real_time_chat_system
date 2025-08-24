@@ -71,21 +71,29 @@ export default function ChatRoom({ me, room }) {
     }, 0);
   };
 
+  // const send = (text) => {
+  //   if (!text.trim() || !socket) return;
+
+  //   const tempId = Date.now().toString();
+  //   const newMsg = {
+  //     _id: tempId,
+  //     senderName: me,
+  //     text,
+  //     createdAt: new Date().toISOString(),
+  //   };
+  //   setMessages((prev) => [...prev, newMsg]);
+  //   scrollToBottom();
+
+  //   socket.emit("chatMessage", { room, text, senderName: me });
+  // };
+
+
   const send = (text) => {
-    if (!text.trim() || !socket) return;
+  if (!text.trim() || !socket) return;
 
-    const tempId = Date.now().toString();
-    const newMsg = {
-      _id: tempId,
-      senderName: me,
-      text,
-      createdAt: new Date().toISOString(),
-    };
-    setMessages((prev) => [...prev, newMsg]);
-    scrollToBottom();
+  socket.emit("chatMessage", { room, text, senderName: me });
+};
 
-    socket.emit("chatMessage", { room, text, senderName: me });
-  };
 
   const onTypingChange = (isTyping) => {
     if (!socket) return;
