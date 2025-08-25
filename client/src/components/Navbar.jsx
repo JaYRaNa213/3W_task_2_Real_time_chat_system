@@ -55,69 +55,73 @@ const Navbar = () => {
 
   return (
     <>
-      <AppBar position="static" color="primary">
-        <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
-          {/* App name */}
-          <Typography
-            variant="h6"
-            sx={{ cursor: "pointer" }}
-            onClick={() => navigate("/")}
+      <AppBar
+  position="static"
+  sx={{
+    background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+  }}
+>
+  <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
+    {/* App name */}
+    <Typography
+      variant="h6"
+      sx={{ cursor: "pointer" }}
+      onClick={() => navigate("/")}
+    >
+      3W Real Time Chat
+    </Typography>
+
+    {/* Desktop Navigation */}
+    {!isMobile && (
+      <Box sx={{ display: "flex", alignItems: "center" }}>
+        {navItems.map((item) => (
+          <Button
+            key={item.label}
+            color="inherit"
+            onClick={() => navigate(item.path)}
           >
-            3W Real Time Chat
-          </Typography>
+            {item.label}
+          </Button>
+        ))}
 
-          {/* Desktop Navigation */}
-          {!isMobile && (
-            <Box sx={{ display: "flex", alignItems: "center" }}>
-              {navItems.map((item) => (
-                <Button
-                  key={item.label}
-                  color="inherit"
-                  onClick={() => navigate(item.path)}
-                >
-                  {item.label}
-                </Button>
-              ))}
-
-              {/* Registered user logout */}
-              {username && !isGuest && (
-                <>
-                  <Typography
-                    variant="body1"
-                    sx={{ mr: 2, ml: 2, fontWeight: "bold" }}
-                  >
-                    {username}
-                  </Typography>
-                  <Button color="inherit" onClick={handleLogout}>
-                    Logout
-                  </Button>
-                </>
-              )}
-
-              {/* Guest display */}
-              {isGuest && (
-                <Typography
-                  variant="body1"
-                  sx={{ mr: 2, ml: 2, fontWeight: "bold" }}
-                >
-                  {username} (Guest)
-                </Typography>
-              )}
-            </Box>
-          )}
-
-          {/* Mobile Hamburger Menu */}
-          {isMobile && (
-            <IconButton
-              color="inherit"
-              edge="end"
-              onClick={() => setDrawerOpen(true)}
+        {username && !isGuest && (
+          <>
+            <Typography
+              variant="body1"
+              sx={{ mr: 2, ml: 2, fontWeight: "bold" }}
             >
-              <MenuIcon />
-            </IconButton>
-          )}
-        </Toolbar>
-      </AppBar>
+              {username}
+            </Typography>
+            <Button color="inherit" onClick={handleLogout}>
+              Logout
+            </Button>
+          </>
+        )}
+
+        {isGuest && (
+          <Typography
+            variant="body1"
+            sx={{ mr: 2, ml: 2, fontWeight: "bold" }}
+          >
+            {username} (Guest)
+          </Typography>
+        )}
+      </Box>
+    )}
+
+    {/* Mobile Hamburger Menu */}
+    {isMobile && (
+      <IconButton
+        color="inherit"
+        edge="end"
+        onClick={() => setDrawerOpen(true)}
+      >
+        <MenuIcon />
+      </IconButton>
+    )}
+  </Toolbar>
+</AppBar>
+
 
       {/* Mobile Drawer */}
       <Drawer
