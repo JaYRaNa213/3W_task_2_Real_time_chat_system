@@ -49,7 +49,7 @@ import RoomsSidebar from "../components/RoomsSidebar";
 import ChatRoom from "../components/ChatRoom/ChatRoom";
 import { useSocket } from "../context/SocketContext";
 import CreateRoomDialog from "../components/CreateRoomButton";
-
+import http from "../api/http"; 
 
 const Chat = () => {
   const theme = useTheme();
@@ -82,16 +82,35 @@ const Chat = () => {
 
   // ---- Load Rooms and Messages ----
   useEffect(() => {
-    const rooms = JSON.parse(localStorage.getItem(ROOMS_KEY)) || ["General"];
-    setRecentRooms(rooms);
+  const fetchRoomsAndCounts = async () => {
+    try {
+      // 1. Fetch rooms
+      const { data: roomsData } = await http.get("/api/rooms");
+      const rooms = roomsData.map((r) => r.name);
 
-    const messages = JSON.parse(localStorage.getItem(MESSAGES_KEY)) || {};
-    setActiveRooms(
-      Object.fromEntries(
-        rooms.map((r) => [r, messages[r]?.length || 0])
-      )
-    );
-  }, []);
+      setRecentRooms(rooms);
+
+      // 2. Fetch counts for each room
+      const counts = {};
+      for (const room of rooms) {
+        const { data } = await http.get(`/api/messages/${room}/count`);
+        counts[room] = data.count;
+      }
+
+      // 3. Save to state
+      setActiveRooms(counts);
+
+      // 4. Cache
+      localStorage.setItem(ROOMS_KEY, JSON.stringify(rooms));
+      localStorage.setItem(MESSAGES_KEY, JSON.stringify(counts));
+    } catch (err) {
+      console.error("Error fetching rooms/counts:", err);
+    }
+  };
+
+  fetchRoomsAndCounts();
+}, []);
+
 
   // ---- Join Room ----
   const joinRoom = (roomName) => {
@@ -108,22 +127,6 @@ const Chat = () => {
     if (isMobile) setDrawerOpen(false);
   };
 
-
-
-  // ---- Fake Notifications ----
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (!room && recentRooms.length > 0) {
-        const target =
-          recentRooms[Math.floor(Math.random() * recentRooms.length)];
-        setUnread((prev) => ({
-          ...prev,
-          [target]: (prev[target] || 0) + 1,
-        }));
-      }
-    }, 5000);
-    return () => clearInterval(interval);
-  }, [room, recentRooms]);
 
   // Get user avatar color
   const getAvatarColor = (name) => {

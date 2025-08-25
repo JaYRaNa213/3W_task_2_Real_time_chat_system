@@ -26,6 +26,9 @@ router.post("/", async (req, res) => {
   }
 });
 
+
+
+
 // Get all messages in a room
 router.get("/:room/messages", async (req, res, next) => {
   try {
@@ -36,5 +39,20 @@ router.get("/:room/messages", async (req, res, next) => {
     next(err);
   }
 });
+
+
+
+
+//  Public endpoint for message counts
+router.get("/:room/count", async (req, res, next) => {
+  try {
+    const { room } = req.params;
+    const count = await Message.countDocuments({ room });
+    res.json({ room, count });
+  } catch (err) {
+    next(err);
+  }
+});
+
 
 export default router;

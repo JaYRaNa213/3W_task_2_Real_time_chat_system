@@ -23,12 +23,10 @@ const allowedOrigins = [
 ];
 
 const MONGO_URI =
-  process.env.MONGO_URI ||
-  "mongodb+srv://jayrana0909:jay0000@religiouscluster0.kjqo7ay.mongodb.net/3W_Real_time_Chat_System_collection?retryWrites=true&w=majority";
+  process.env.MONGO_URI;
 
 const REDIS_URL =
-  process.env.REDIS_URL ||
-  "redis://default:m7tx77PBfE1AaO26VOxqXydJpHwyqJ1U@redis-17330.c61.us-east-1-3.ec2.redns.redis-cloud.com:17330";
+  process.env.REDIS_URL;
 
 console.log("🔗 Using Redis URL:", REDIS_URL);
 const redis = new Redis(REDIS_URL, {
@@ -44,7 +42,7 @@ redis.on("error", (err) => console.error("❌ Redis error:", err));
 const app = express();
 app.use(express.json());
 
-// ✅ CORS config with whitelist
+// CORS config with whitelist
 app.use(
   cors({
     origin: function (origin, callback) {
@@ -74,7 +72,7 @@ app.get("/", (_req, res) => res.json({ ok: true, service: "chat-server" }));
 
 // Routes
 app.use("/api/rooms", roomsRouter);
-app.use("/api/messages", authMiddleware, messagesRouter);
+app.use("/api/messages", messagesRouter);
 app.use("/api/auth", authRouter);
 
 const server = http.createServer(app);
@@ -85,10 +83,10 @@ createSocketServer(server, allowedOrigins);
 mongoose
   .connect(MONGO_URI)
   .then(() => {
-    console.log("✅ MongoDB connected");
+    console.log(" MongoDB connected");
     server.listen(PORT, () => {
-      console.log(`🚀 Server listening on http://localhost:${PORT}`);
-      console.log(`🌐 Allowed client origins: ${allowedOrigins.join(", ")}`);
+      console.log(` Server listening on http://localhost:${PORT}`);
+      console.log(` Allowed client origins: ${allowedOrigins.join(", ")}`);
     });
   })
   .catch((err) => {
