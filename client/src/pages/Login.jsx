@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import {
   Box,
   Typography,
@@ -9,11 +9,13 @@ import {
   Alert,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import http from '../api/http'; 
+import http from '../api/http';
 import Navbar from "../components/Navbar";
+import { AuthContext } from "../context/AuthContext";   // ✅ import AuthContext
 
 const Login = () => {
   const navigate = useNavigate();
+  const { setUser } = useContext(AuthContext);   // ✅ use AuthContext
 
   // Form state
   const [formData, setFormData] = useState({
@@ -37,20 +39,25 @@ const Login = () => {
 
     try {
       const res = await http.post('/api/auth/login', formData);
-      localStorage.setItem('username', res.data.username);
+      // ✅ Update AuthContext instead of raw localStorage
+      setUser({
+        username: res.data.username,
+        token: res.data.token,
+        guest: false,         // explicit flag
+      });
+
       setSuccess(true);
 
       setTimeout(() => {
-        navigate('/chat', { state: { username: res.data.username } });
+        navigate('/chat');
       }, 1200);
     } catch (err) {
-      setError(err.response?.data?.message || 'Login failed');
+      setError(err.response?.data?.error || 'Login failed'); // ✅ fix key (backend sends .error not .message)
     }
   };
 
   return (
     <>
-    
       <Navbar />
 
       {/* Main Login Box */}

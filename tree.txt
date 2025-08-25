@@ -1,4 +1,5 @@
 ├── .gitignore
+├── 3W Chat.apk
 ├── client
 │   ├── .env
 │   ├── .gitignore
@@ -8,7 +9,9 @@
 │   │   ├── favicon.ico
 │   │   ├── index.html
 │   │   ├── logo192.png
+│   │   ├── logo1921.png
 │   │   ├── logo512.png
+│   │   ├── logo5121.png
 │   │   ├── manifest.json
 │   │   └── robots.txt
 │   └── src
@@ -25,6 +28,7 @@
 │       │   │   ├── MessageList.jsx
 │       │   │   ├── OnlineUsersList.jsx
 │       │   │   └── TypingIndicator.jsx
+│       │   ├── CreateRoomButton.jsx
 │       │   ├── Navbar.jsx
 │       │   ├── PrivateRoute.jsx
 │       │   └── RoomsSidebar.jsx
@@ -41,6 +45,9 @@
 │       │   └── Register.jsx
 │       ├── styles.css
 │       └── utils
+├── Documentation.pdf
+├── img
+│   └── a.txt
 ├── README.md
 ├── server
 │   ├── .env
