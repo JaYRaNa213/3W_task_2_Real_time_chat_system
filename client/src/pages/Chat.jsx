@@ -460,16 +460,18 @@ const Chat = () => {
                                 }}
                               >
                                 <RoomIcon sx={{ mr: 2, fontSize: 20 }} />
-                                <Badge
-                                  color="error"
-                                  badgeContent={unread[roomName] || 0}
-                                  invisible={!unread[roomName]}
-                                >
-                                  <ListItemText
-                                    primary={roomName}
-                                    primaryTypographyProps={{ fontWeight: 500 }}
-                                  />
-                                </Badge>
+                               <Badge
+  color="error"
+  badgeContent={activeRooms[roomName] || 0}
+  invisible={!activeRooms[roomName]}
+>
+  <ListItemText
+    primary={roomName}
+    primaryTypographyProps={{ fontWeight: 500 }}
+  />
+</Badge>
+
+
                               </ListItem>
                             ))}
 </List>

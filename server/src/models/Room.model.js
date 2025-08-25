@@ -4,11 +4,11 @@ const roomSchema = new mongoose.Schema(
   {
     name: { type: String, required: true, unique: true, trim: true },
     description: { type: String, trim: true },
-    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, // optional
+    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   },
   { timestamps: true }
 );
 
-roomSchema.index({ name: 1 });
 
-export default mongoose.model("Room", roomSchema);
+
+export default mongoose.models.Room || mongoose.model("Room", roomSchema);
