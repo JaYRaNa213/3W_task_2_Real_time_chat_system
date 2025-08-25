@@ -16,6 +16,7 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import PeopleIcon from "@mui/icons-material/People";
+import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 
 export default function ChatRoom({ me, room,onBack }) {
   const socket = useContext(SocketContext);
@@ -25,11 +26,9 @@ export default function ChatRoom({ me, room,onBack }) {
   const [messages, setMessages] = useState([]);
   const [online, setOnline] = useState([]);
   const [typingUsers, setTypingUsers] = useState([]);
-  
-  const navigate = useNavigate();
-
-
   const [sidebarOpen, setSidebarOpen] = useState(!isMobile);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!socket) return;
@@ -76,29 +75,10 @@ export default function ChatRoom({ me, room,onBack }) {
     }, 0);
   };
 
-  // const send = (text) => {
-  //   if (!text.trim() || !socket) return;
-
-  //   const tempId = Date.now().toString();
-  //   const newMsg = {
-  //     _id: tempId,
-  //     senderName: me,
-  //     text,
-  //     createdAt: new Date().toISOString(),
-  //   };
-  //   setMessages((prev) => [...prev, newMsg]);
-  //   scrollToBottom();
-
-  //   socket.emit("chatMessage", { room, text, senderName: me });
-  // };
-
-
   const send = (text) => {
-  if (!text.trim() || !socket) return;
-
-  socket.emit("chatMessage", { room, text, senderName: me });
-};
-
+    if (!text.trim() || !socket) return;
+    socket.emit("chatMessage", { room, text, senderName: me });
+  };
 
   const onTypingChange = (isTyping) => {
     if (!socket) return;
@@ -112,56 +92,60 @@ export default function ChatRoom({ me, room,onBack }) {
 
   return (
     <Paper
-      elevation={4}
+      elevation={6}
       sx={{
         display: "flex",
         flexDirection: "column",
         height: "100vh",
         borderRadius: 3,
         overflow: "hidden",
+        bgcolor: "#fdfdfd",
       }}
     >
-      {/* Header */}
-      <AppBar position="sticky" color="#1976d2" sx={{ borderRadius: 0 }}>
-        
+      {/* HEADER */}
+      <AppBar
+        position="sticky"
+        sx={{
+          borderRadius: 0,
+          background: "linear-gradient(90deg, #6a11cb 0%, #2575fc 100%)",
+        }}
+      >
         <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
-  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-    <IconButton
-      color="inherit"
-      onClick={onBack} // ✅ goes back to Welcome
-      size={isMobile ? "small" : "medium"}
-    >
-      ←
-    </IconButton>
-    <Typography variant={isMobile ? "subtitle1" : "h6"}>#{room}</Typography>
-    <Typography variant="body2" sx={{ opacity: 0.8, fontSize: isMobile ? 12 : "inherit" }}>
-      Signed in as {me}
-    </Typography>
-  </Box>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <IconButton color="inherit" onClick={onBack} size="small">
+              <ArrowBackIosNewIcon fontSize="small" />
+            </IconButton>
+            <Typography variant={isMobile ? "subtitle1" : "h6"} fontWeight={600}>
+              #{room}
+            </Typography>
+            <Typography
+              variant="body2"
+              sx={{ opacity: 0.8, ml: 1, fontSize: isMobile ? 11 : 13 }}
+            >
+              Signed in as {me}
+            </Typography>
+          </Box>
 
-  <IconButton
-    color="inherit"
-    onClick={() => setSidebarOpen((prev) => !prev)}
-    size={isMobile ? "small" : "medium"}
-  >
-    <PeopleIcon />
-  </IconButton>
-</Toolbar>
-
-
-
+          <IconButton
+            color="inherit"
+            onClick={() => setSidebarOpen((prev) => !prev)}
+            size="medium"
+          >
+            <PeopleIcon />
+          </IconButton>
+        </Toolbar>
       </AppBar>
 
-      {/* Main content */}
+      {/* MAIN CONTENT */}
       <Box sx={{ display: "flex", flex: 1, overflow: "hidden" }}>
-        {/* Chat messages */}
+        {/* CHAT MESSAGES */}
         <Box
           ref={scrollRef}
           sx={{
             flex: 1,
             overflowY: "auto",
-            p: isMobile ? 1 : 2,
-            bgcolor: "#386077ff",
+            p: isMobile ? 1.2 : 2,
+            bgcolor: "#f4f6fb",
             display: "flex",
             flexDirection: "column",
           }}
@@ -181,7 +165,7 @@ export default function ChatRoom({ me, room,onBack }) {
                   px: 2,
                   py: 1,
                   borderRadius: 3,
-                  maxWidth: isMobile ? "100%" : "70%",
+                  maxWidth: isMobile ? "90%" : "65%",
                   wordBreak: "break-word",
                   boxShadow: 1,
                   animation: "fadeIn 0.2s",
@@ -201,7 +185,7 @@ export default function ChatRoom({ me, room,onBack }) {
                     {msg.senderName}
                   </Typography>
                 )}
-                <Typography variant="body1" sx={{ fontSize: isMobile ? 14 : "inherit" }}>
+                <Typography variant="body1" sx={{ fontSize: isMobile ? 14 : 15 }}>
                   {msg.text}
                 </Typography>
                 <Typography
@@ -211,7 +195,7 @@ export default function ChatRoom({ me, room,onBack }) {
                     mt: 0.5,
                     display: "block",
                     textAlign: "right",
-                    fontSize: isMobile ? 10 : "0.65rem",
+                    fontSize: isMobile ? 10 : 11,
                   }}
                 >
                   {new Date(msg.createdAt).toLocaleTimeString([], {
@@ -219,28 +203,22 @@ export default function ChatRoom({ me, room,onBack }) {
                     minute: "2-digit",
                   })}
                 </Typography>
-
-                {/* Typing indicator */}
-                {typingUsers.includes(msg.senderName) && (
-                  <Typography
-                    variant="caption"
-                    sx={{ fontStyle: "italic", opacity: 0.7 }}
-                  >
-                    typing...
-                  </Typography>
-                )}
               </Box>
             );
           })}
         </Box>
 
-        {/* Collapsible online users sidebar */}
-        <Collapse in={sidebarOpen && !isMobile ? true : sidebarOpen} orientation="horizontal">
+        {/* SIDEBAR - ONLINE USERS */}
+        <Collapse
+          in={sidebarOpen}
+          orientation="horizontal"
+          sx={{ zIndex: isMobile ? 1200 : 1 }}
+        >
           <Paper
             sx={{
-              width: isMobile ? "60vw" : 250,
-              bgcolor: "#f5f5f5",
-              borderLeft: "1px solid #ccc",
+              width: isMobile ? "70vw" : 260,
+              bgcolor: "#ffffff",
+              borderLeft: "1px solid #e0e0e0",
               display: "flex",
               flexDirection: "column",
               overflowY: "auto",
@@ -248,10 +226,10 @@ export default function ChatRoom({ me, room,onBack }) {
               right: 0,
               top: 0,
               height: "100%",
-              zIndex: 10,
+              boxShadow: isMobile ? "0 0 15px rgba(0,0,0,0.15)" : "none",
             }}
           >
-            <Box sx={{ p: 1, borderBottom: "1px solid #ccc" }}>
+            <Box sx={{ p: 2, borderBottom: "1px solid #eee", bgcolor: "#fafafa" }}>
               <Typography variant="subtitle1" fontWeight={600}>
                 Online Users ({online.length})
               </Typography>
@@ -262,17 +240,20 @@ export default function ChatRoom({ me, room,onBack }) {
                 sx={{
                   display: "flex",
                   alignItems: "center",
-                  p: 1,
-                  borderBottom: "1px solid #eee",
-                  gap: 1,
+                  p: 1.5,
+                  borderBottom: "1px solid #f2f2f2",
+                  gap: 1.5,
+                  "&:hover": { bgcolor: "#f9f9f9" },
                 }}
               >
-                <Avatar sx={{ width: 32, height: 32 }}>{user.username[0]}</Avatar>
+                <Avatar sx={{ width: 32, height: 32, bgcolor: "#2575fc" }}>
+                  {user.username[0]}
+                </Avatar>
                 <Typography variant="body2">{user.username}</Typography>
                 <Box
                   sx={{
-                    width: 8,
-                    height: 8,
+                    width: 10,
+                    height: 10,
                     borderRadius: "50%",
                     bgcolor: "green",
                     ml: "auto",
@@ -284,19 +265,19 @@ export default function ChatRoom({ me, room,onBack }) {
         </Collapse>
       </Box>
 
-      {/* Typing indicator at bottom */}
+      {/* TYPING INDICATOR */}
       <Box sx={{ px: 2, pb: 1 }}>
         <TypingIndicator typingUsers={typingUsers} />
       </Box>
 
       <Divider />
 
-      {/* Input */}
+      {/* INPUT AREA */}
       <Box
         sx={{
           p: 1,
-          bgcolor: "white",
-          boxShadow: "0 -2px 4px rgba(0,0,0,0.1)",
+          bgcolor: "#fff",
+          boxShadow: "0 -3px 8px rgba(0,0,0,0.1)",
         }}
       >
         <MessageInput onSend={send} onTyping={onTypingChange} />
