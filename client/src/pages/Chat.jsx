@@ -78,22 +78,6 @@ const Chat = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  // ---- Manage Online Users ----
-  // Listen for online users from backend
-  useEffect(() => {
-    if (!socket) return;
-
-    // always join lobby when connected
-    socket.emit("joinRoom", { username, room: "General" });
-
-    const handleOnlineUsers = (users) => setOnlineUsers(users);
-    socket.on("onlineUsers", handleOnlineUsers);
-
-    return () => {
-      socket.off("onlineUsers", handleOnlineUsers);
-    };
-  }, [socket, username]);
-
 
 
   // ---- Load Rooms and Messages ----
