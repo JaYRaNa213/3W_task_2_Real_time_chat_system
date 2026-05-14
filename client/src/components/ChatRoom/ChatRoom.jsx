@@ -1,37 +1,41 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
-import { Box, Typography, IconButton, Avatar, Tooltip, useTheme, useMediaQuery } from "@mui/material";
-import { Hash, Users, PanelRightClose, PanelRightOpen, ArrowLeft } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-import { SocketContext } from "../../context/SocketContext";
+import { useContext, useEffect, useRef, useState } from "react";
 import MessageInput from "./MessageInput";
 import TypingIndicator from "./TypingIndicator";
+import { SocketContext } from "../../context/SocketContext";
+import { useNavigate } from "react-router-dom"; // if React Router
+import {
+  Box,
+  Typography,
+  Paper,
+  Divider,
+  AppBar,
+  Toolbar,
+  IconButton,
+  Avatar,
+  Collapse,
+  useMediaQuery,
+} from "@mui/material";
+import PeopleIcon from "@mui/icons-material/People";
+import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 
-const MotionBox = motion.create(Box);
-
-export default function ChatRoom({ me, room, onBack }) {
-  const theme = useTheme();
+export default function ChatRoom({ me, room,onBack }) {
   const socket = useContext(SocketContext);
   const scrollRef = useRef(null);
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const isMobile = useMediaQuery("(max-width:600px)");
 
   const [messages, setMessages] = useState([]);
   const [online, setOnline] = useState([]);
   const [typingUsers, setTypingUsers] = useState([]);
-  const [rightSidebarOpen, setRightSidebarOpen] = useState(!isMobile);
+  const [sidebarOpen, setSidebarOpen] = useState(!isMobile);
 
-  useEffect(() => {
-    if (isMobile) setRightSidebarOpen(false);
-  }, [isMobile]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!socket) return;
+
     socket.emit("joinRoom", { username: me, room });
 
-    const onLoadHistory = (history) => {
-      setMessages(history || []);
-      scrollToBottom();
-    };
-    
+    const onLoadHistory = (history) => setMessages(history || []);
     const onChatMessage = (msg) => {
       setMessages((prev) => {
         if (prev.some((m) => m._id === msg._id && m.senderName === msg.senderName)) return prev;
@@ -39,9 +43,7 @@ export default function ChatRoom({ me, room, onBack }) {
       });
       scrollToBottom();
     };
-    
     const onOnlineUsers = (list) => setOnline(Array.isArray(list) ? list : []);
-    
     const onTyping = ({ username, isTyping }) => {
       setTypingUsers((prev) => {
         const set = new Set(prev);
@@ -66,8 +68,11 @@ export default function ChatRoom({ me, room, onBack }) {
 
   const scrollToBottom = () => {
     setTimeout(() => {
-      scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
-    }, 100);
+      scrollRef.current?.scrollTo({
+        top: scrollRef.current.scrollHeight,
+        behavior: "smooth",
+      });
+    }, 0);
   };
 
   const send = (text) => {
@@ -80,169 +85,203 @@ export default function ChatRoom({ me, room, onBack }) {
     socket.emit("typing", { room, username: me, isTyping });
   };
 
-  // Grouping logic
   const isPrevSameUser = (index) => {
     if (index === 0) return false;
-    const current = messages[index];
-    const prev = messages[index - 1];
-    
-    if (current.senderName === "System" || prev.senderName === "System") return false;
-    
-    const timeDiff = new Date(current.createdAt) - new Date(prev.createdAt);
-    return current.senderName === prev.senderName && timeDiff < 60000 * 5; // 5 min grouping
+    return messages[index - 1].senderName === messages[index].senderName;
   };
 
   return (
-    <Box sx={{ display: "flex", flex: 1, overflow: "hidden", position: "relative" }}>
-      
-      {/* Center Chat Area */}
-      <Box sx={{ flex: 1, display: "flex", flexDirection: "column", bgcolor: "background.default", position: "relative" }}>
-        
-        {/* Chat Header */}
-        <Box sx={{ p: 2, display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: "1px solid", borderColor: "divider", bgcolor: "rgba(10, 10, 10, 0.8)", backdropFilter: "blur(20px)", zIndex: 10 }}>
+    <Paper
+      elevation={6}
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100vh",
+        borderRadius: 3,
+        overflow: "hidden",
+        bgcolor: "#fdfdfd",
+      }}
+    >
+      {/* HEADER */}
+      <AppBar
+        position="sticky"
+        sx={{
+          borderRadius: 0,
+          background: "linear-gradient(90deg, #6a11cb 0%, #2575fc 100%)",
+        }}
+      >
+        <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            {isMobile && (
-              <IconButton onClick={onBack} size="small" sx={{ mr: 1, color: "text.secondary" }}>
-                <ArrowLeft size={20} />
-              </IconButton>
-            )}
-            <Hash size={24} color={theme.palette.text.secondary} />
-            <Typography variant="h6" fontWeight="700">{room}</Typography>
+            <IconButton color="inherit" onClick={onBack} size="small">
+              <ArrowBackIosNewIcon fontSize="small" />
+            </IconButton>
+            <Typography variant={isMobile ? "subtitle1" : "h6"} fontWeight={600}>
+              #{room}
+            </Typography>
+            <Typography
+              variant="body2"
+              sx={{ opacity: 0.8, ml: 1, fontSize: isMobile ? 11 : 13 }}
+            >
+              Signed in as {me}
+            </Typography>
           </Box>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <Tooltip title="Toggle Members">
-              <IconButton onClick={() => setRightSidebarOpen(!rightSidebarOpen)} sx={{ color: rightSidebarOpen ? "primary.main" : "text.secondary" }}>
-                {rightSidebarOpen ? <PanelRightClose size={20} /> : <PanelRightOpen size={20} />}
-              </IconButton>
-            </Tooltip>
-          </Box>
-        </Box>
 
-        {/* Message List */}
-        <Box ref={scrollRef} sx={{ flex: 1, overflowY: "auto", p: { xs: 2, md: 4 }, display: "flex", flexDirection: "column" }}>
-          
-          <Box sx={{ mt: "auto" }}> {/* Push to bottom naturally if few msgs */}
-            
-            {messages.map((msg, index) => {
-              const isSystem = msg.senderName === "System";
-              const isMe = msg.senderName === me;
-              const prevSame = isPrevSameUser(index);
+          <IconButton
+            color="inherit"
+            onClick={() => setSidebarOpen((prev) => !prev)}
+            size="medium"
+          >
+            <PeopleIcon />
+          </IconButton>
+        </Toolbar>
+      </AppBar>
 
-              if (isSystem) {
-                return (
-                  <Box key={msg._id || index} sx={{ display: "flex", justifyContent: "center", my: 2 }}>
-                    <Typography variant="caption" sx={{ px: 2, py: 0.5, borderRadius: "full", bgcolor: "rgba(255,255,255,0.05)", color: "text.secondary", fontSize: "0.75rem" }}>
-                      {msg.text}
-                    </Typography>
-                  </Box>
-                );
-              }
+      {/* MAIN CONTENT */}
+      <Box sx={{ display: "flex", flex: 1, overflow: "hidden" }}>
+        {/* CHAT MESSAGES */}
+        <Box
+          ref={scrollRef}
+          sx={{
+            flex: 1,
+            overflowY: "auto",
+            p: isMobile ? 1.2 : 2,
+            bgcolor: "#f4f6fb",
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          {messages.map((msg, index) => {
+            const isMe = msg.senderName === me;
+            const prevSameUser = isPrevSameUser(index);
+            const altBg = !isMe && index % 2 === 0 ? "#d6d6d6" : "#e0e0e0";
 
-              return (
-                <MotionBox
-                  key={msg._id || index}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.2 }}
-                  sx={{ display: "flex", flexDirection: "column", alignItems: isMe ? "flex-end" : "flex-start", mb: prevSame ? 0.5 : 2, mt: prevSame ? 0 : 2 }}
-                >
-                  {!prevSame && (
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 0.5, ml: isMe ? 0 : 1, mr: isMe ? 1 : 0, flexDirection: isMe ? "row-reverse" : "row" }}>
-                      <Avatar sx={{ width: 24, height: 24, bgcolor: isMe ? "primary.main" : "rgba(255,255,255,0.1)", fontSize: "0.75rem", fontWeight: 700 }}>
-                        {msg.senderName.charAt(0).toUpperCase()}
-                      </Avatar>
-                      <Typography variant="caption" fontWeight="600" color={isMe ? "primary.light" : "text.secondary"}>
-                        {msg.senderName}
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary" sx={{ opacity: 0.5, fontSize: "0.7rem" }}>
-                        {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                      </Typography>
-                    </Box>
-                  )}
-                  <Box
+            return (
+              <Box
+                key={msg._id}
+                sx={{
+                  alignSelf: isMe ? "flex-end" : "flex-start",
+                  bgcolor: isMe ? "#1976d2" : altBg,
+                  color: isMe ? "#fff" : "#000",
+                  px: 2,
+                  py: 1,
+                  borderRadius: 3,
+                  maxWidth: isMobile ? "90%" : "65%",
+                  wordBreak: "break-word",
+                  boxShadow: 1,
+                  animation: "fadeIn 0.2s",
+                  mt: prevSameUser ? 0.3 : 1,
+                }}
+              >
+                {!prevSameUser && (
+                  <Typography
+                    variant="caption"
                     sx={{
-                      maxWidth: "75%",
-                      px: 2.5,
-                      py: 1.5,
-                      borderRadius: 3,
-                      borderTopLeftRadius: !isMe && !prevSame ? 4 : 24,
-                      borderTopRightRadius: isMe && !prevSame ? 4 : 24,
-                      bgcolor: isMe ? "primary.main" : "rgba(255, 255, 255, 0.05)",
-                      color: "#fff",
-                      boxShadow: isMe ? "0 4px 14px rgba(126, 87, 194, 0.2)" : "none",
-                      border: isMe ? "none" : "1px solid rgba(255,255,255,0.05)",
-                      lineHeight: 1.5,
-                      fontSize: "0.95rem",
+                      fontWeight: 600,
+                      color: isMe ? "#bbdefb" : "#1976d2",
+                      display: "block",
+                      mb: 0.3,
                     }}
                   >
-                    {msg.text}
-                  </Box>
-                </MotionBox>
-              );
-            })}
-          </Box>
-          <TypingIndicator typingUsers={typingUsers} />
+                    {msg.senderName}
+                  </Typography>
+                )}
+                <Typography variant="body1" sx={{ fontSize: isMobile ? 14 : 15 }}>
+                  {msg.text}
+                </Typography>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    opacity: 0.6,
+                    mt: 0.5,
+                    display: "block",
+                    textAlign: "right",
+                    fontSize: isMobile ? 10 : 11,
+                  }}
+                >
+                  {new Date(msg.createdAt).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </Typography>
+              </Box>
+            );
+          })}
         </Box>
 
-        {/* Input Area */}
-        <Box sx={{ p: { xs: 2, md: 3 }, pt: 0, bgcolor: "transparent" }}>
-          <MessageInput onSend={send} onTyping={onTypingChange} />
-        </Box>
-      </Box>
-
-      {/* Right Sidebar (Online Users) */}
-      <AnimatePresence>
-        {rightSidebarOpen && (
-          <MotionBox
-            initial={{ width: 0, opacity: 0 }}
-            animate={{ width: isMobile ? "100%" : 260, opacity: 1 }}
-            exit={{ width: 0, opacity: 0 }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
+        {/* SIDEBAR - ONLINE USERS */}
+        <Collapse
+          in={sidebarOpen}
+          orientation="horizontal"
+          sx={{ zIndex: isMobile ? 1200 : 1 }}
+        >
+          <Paper
             sx={{
-              borderLeft: "1px solid",
-              borderColor: "divider",
-              bgcolor: "background.paper",
+              width: isMobile ? "70vw" : 260,
+              bgcolor: "#ffffff",
+              borderLeft: "1px solid #e0e0e0",
               display: "flex",
               flexDirection: "column",
-              overflow: "hidden",
+              overflowY: "auto",
               position: isMobile ? "absolute" : "relative",
               right: 0,
               top: 0,
               height: "100%",
-              zIndex: 50,
+              boxShadow: isMobile ? "0 0 15px rgba(0,0,0,0.15)" : "none",
             }}
           >
-            <Box sx={{ p: 2, display: "flex", alignItems: "center", gap: 1, borderBottom: "1px solid", borderColor: "divider" }}>
-              <Users size={18} color={theme.palette.text.secondary} />
-              <Typography variant="subtitle2" fontWeight="700" color="text.secondary" sx={{ textTransform: "uppercase", letterSpacing: "1px" }}>
-                Members — {online.length}
+            <Box sx={{ p: 2, borderBottom: "1px solid #eee", bgcolor: "#fafafa" }}>
+              <Typography variant="subtitle1" fontWeight={600}>
+                Online Users ({online.length})
               </Typography>
-              {isMobile && (
-                <IconButton size="small" onClick={() => setRightSidebarOpen(false)} sx={{ ml: "auto" }}>
-                  <PanelRightClose size={18} />
-                </IconButton>
-              )}
             </Box>
+            {online.map((user) => (
+              <Box
+                key={user.id}
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  p: 1.5,
+                  borderBottom: "1px solid #f2f2f2",
+                  gap: 1.5,
+                  "&:hover": { bgcolor: "#f9f9f9" },
+                }}
+              >
+                <Avatar sx={{ width: 32, height: 32, bgcolor: "#2575fc" }}>
+                  {user.username[0]}
+                </Avatar>
+                <Typography variant="body2">{user.username}</Typography>
+                <Box
+                  sx={{
+                    width: 10,
+                    height: 10,
+                    borderRadius: "50%",
+                    bgcolor: "green",
+                    ml: "auto",
+                  }}
+                />
+              </Box>
+            ))}
+          </Paper>
+        </Collapse>
+      </Box>
 
-            <Box sx={{ flex: 1, overflowY: "auto", p: 2 }}>
-              {online.map((u) => (
-                <Box key={u.id} sx={{ display: "flex", alignItems: "center", gap: 1.5, p: 1, borderRadius: 2, "&:hover": { bgcolor: "rgba(255,255,255,0.05)" }, cursor: "pointer", transition: "background 0.2s" }}>
-                  <Box sx={{ position: "relative" }}>
-                    <Avatar sx={{ width: 32, height: 32, bgcolor: "rgba(255,255,255,0.1)", fontSize: "0.85rem", fontWeight: 600 }}>
-                      {u.username.charAt(0).toUpperCase()}
-                    </Avatar>
-                    <Box sx={{ position: "absolute", bottom: 0, right: 0, width: 10, height: 10, borderRadius: "50%", bgcolor: "#10B981", border: "2px solid #121212" }} />
-                  </Box>
-                  <Typography variant="body2" fontWeight="500" sx={{ flex: 1, textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap" }}>
-                    {u.username}
-                  </Typography>
-                </Box>
-              ))}
-            </Box>
-          </MotionBox>
-        )}
-      </AnimatePresence>
+      {/* TYPING INDICATOR */}
+      <Box sx={{ px: 2, pb: 1 }}>
+        <TypingIndicator typingUsers={typingUsers} />
+      </Box>
 
-    </Box>
+      <Divider />
+
+      {/* INPUT AREA */}
+      <Box
+        sx={{
+          p: 1,
+          bgcolor: "#fff",
+          boxShadow: "0 -3px 8px rgba(0,0,0,0.1)",
+        }}
+      >
+        <MessageInput onSend={send} onTyping={onTypingChange} />
+      </Box>
+    </Paper>
   );
 }

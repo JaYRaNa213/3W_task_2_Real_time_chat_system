@@ -69,7 +69,7 @@ const Navbar = () => {
             sx={{ cursor: "pointer" }}
             onClick={() => navigate("/")}
           >
-            Real Time Chat
+            3W Real Time Chat
           </Typography>
 
           {/* Desktop Navigation */}
