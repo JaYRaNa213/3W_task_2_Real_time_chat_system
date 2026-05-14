@@ -1,4 +1,4 @@
-# Real-Time Chat Website
+# 3W Real-Time Chat Website
 
 <div align="center">
 
@@ -11,9 +11,9 @@
 
 **A full-stack real-time chat application built with modern web technologies**
 
-_Featuring user authentication, multiple chat rooms, message history, online users tracking, and guest access_
+*Featuring user authentication, multiple chat rooms, message history, online users tracking, and guest access*
 
-[🚀 Live Demo](https://real-time-chat-system-lyart.vercel.app/) • [📖 Documentation](https://drive.google.com/file/d/1jqBaer4P2sQVtPO1-13DRXmJED-pUlfc/view?usp=sharing)
+[🚀 Live Demo](https://real-time-chat-system-lyart.vercel.app/) • [📖 Documentation](https://drive.google.com/file/d/1jqBaer4P2sQVtPO1-13DRXmJED-pUlfc/view?usp=sharing) 
 
 </div>
 
@@ -39,7 +39,8 @@ _Featuring user authentication, multiple chat rooms, message history, online use
 
 ## 🎯 Project Overview
 
-** Real-Time Chat** is a modern, full-featured chat application that provides seamless real-time communication experience. Built with cutting-edge technologies, it offers both authenticated user experience and guest access functionality.
+**3W Real-Time Chat** is a modern, full-featured chat application that provides seamless real-time communication experience. Built with cutting-edge technologies, it offers both authenticated user experience and guest access functionality.
+
 
 <img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/0b7ce567-2810-4593-b9ac-ec1af393511e" />
 
@@ -52,36 +53,34 @@ _Featuring user authentication, multiple chat rooms, message history, online use
 ⌨️ **Typing Indicators** - Visual feedback when users are typing  
 🎭 **Guest Access** - Chat without registration required  
 📚 **Message History** - Persistent chat storage in MongoDB  
-📱 **Responsive Design** - Works perfectly on desktop and mobile
+📱 **Responsive Design** - Works perfectly on desktop and mobile  
 
 ---
 
 ## ✨ Features
 
 ### Core Features
-
-| Feature                | Status | Description                             |
-| ---------------------- | ------ | --------------------------------------- |
-| 🔐 User Authentication | ✅     | Secure registration & login with JWT    |
-| 👥 Multi-Room Chat     | ✅     | Join multiple chat rooms simultaneously |
-| ⚡ Real-Time Messaging | ✅     | Instant message delivery via Socket.io  |
-| 👀 Online Status       | ✅     | Live tracking of online users per room  |
-| ⌨️ Typing Indicators   | ✅     | Visual feedback when users are typing   |
-| 🎭 Guest Access        | ✅     | Chat without creating an account        |
-| 📚 Message History     | ✅     | Persistent chat storage in MongoDB      |
-| 📱 Responsive UI       | ✅     | Mobile-friendly responsive design       |
+| Feature | Status | Description |
+|---------|--------|-------------|
+| 🔐 User Authentication | ✅ | Secure registration & login with JWT |
+| 👥 Multi-Room Chat | ✅ | Join multiple chat rooms simultaneously |
+| ⚡ Real-Time Messaging | ✅ | Instant message delivery via Socket.io |
+| 👀 Online Status | ✅ | Live tracking of online users per room |
+| ⌨️ Typing Indicators | ✅ | Visual feedback when users are typing |
+| 🎭 Guest Access | ✅ | Chat without creating an account |
+| 📚 Message History | ✅ | Persistent chat storage in MongoDB |
+| 📱 Responsive UI | ✅ | Mobile-friendly responsive design |
 
 ### Advanced Features
-
-| Feature               | Status | Description                              |
-| --------------------- | ------ | ---------------------------------------- |
-| 🔄 Auto-Reconnection  | ✅     | Automatic reconnection on network issues |
-| 🕒 Message Timestamps | ✅     | Track when messages were sent            |
-| 🏠 Room Management    | ✅     | Create and manage custom chat rooms      |
-| 👤 User Profiles      | 🔄     | Basic user profile information           |
-| 📱 Mobile App         | 🔄     | React Native mobile application          |
-| 📤 File Sharing       | 🔄     | Share files and images                   |
-| 🔔 Push Notifications | 🔄     | Real-time notifications                  |
+| Feature | Status | Description |
+|---------|--------|-------------|
+| 🔄 Auto-Reconnection | ✅ | Automatic reconnection on network issues |
+| 🕒 Message Timestamps | ✅ | Track when messages were sent |
+| 🏠 Room Management | ✅ | Create and manage custom chat rooms |
+| 👤 User Profiles | 🔄 | Basic user profile information |
+| 📱 Mobile App | 🔄 | React Native mobile application |
+| 📤 File Sharing | 🔄 | Share files and images |
+| 🔔 Push Notifications | 🔄 | Real-time notifications |
 
 ---
 
@@ -89,28 +88,29 @@ _Featuring user authentication, multiple chat rooms, message history, online use
 
 <div align="center">
 
+
 </div>
 
 ### Detailed Stack
 
-| Layer                | Technology             | Purpose                               |
-| -------------------- | ---------------------- | ------------------------------------- |
-| **Frontend**         | React 18 + Material-UI | Modern UI with responsive components  |
-| **State Management** | Context API + Hooks    | Centralized state management          |
-| **Real-Time**        | Socket.io Client       | Bidirectional real-time communication |
-| **Routing**          | React Router 6         | Client-side navigation                |
-| **Backend**          | Node.js + Express      | RESTful API server                    |
-| **WebSocket**        | Socket.io Server       | Real-time event handling              |
-| **Database**         | MongoDB + Mongoose     | Document-based data storage           |
-| **Authentication**   | JWT + bcrypt           | Secure user authentication            |
-| **Deployment**       | Vercel                 | Render                                |
+| Layer | Technology | Purpose |
+|-------|------------|---------|
+| **Frontend** | React 18 + Material-UI | Modern UI with responsive components |
+| **State Management** | Context API + Hooks | Centralized state management |
+| **Real-Time** | Socket.io Client | Bidirectional real-time communication |
+| **Routing** | React Router 6 | Client-side navigation |
+| **Backend** | Node.js + Express | RESTful API server |
+| **WebSocket** | Socket.io Server | Real-time event handling |
+| **Database** | MongoDB + Mongoose | Document-based data storage |
+| **Authentication** | JWT + bcrypt | Secure user authentication |
+| **Deployment** | Vercel | Render|
 
 ---
 
 ## 📁 Project Structure
 
 ```
-chat-website/
+3w-chat-website/
 ├── 📄 README.md                 # Project documentation
 ├── 📄 .gitignore               # Git ignore rules
 ├── 📄 tree.js                  # Directory tree generator
@@ -208,16 +208,14 @@ chat-website/
 ### Quick Start on Github 🚀
 
 1. **Fork this Repo**
-
    ```bash
    # Visit: https://github.com/JaYRaNa213/3W_task_2_Real_time_chat_system/tree/main
    # Click "Fork" to create your own copy
    ```
 
 2. **Configure Environment Variables**
-
+   
    Navigate to the Secrets tab in your Repl and add:
-
    ```env
    MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/chat-app
    JWT_SECRET=your-super-secret-jwt-key-here-make-it-long-and-complex
@@ -227,28 +225,26 @@ chat-website/
    ```
 
 3. **Install Dependencies**
-
    ```bash
    # Backend dependencies
    cd server
    npm install
-
-   # Frontend dependencies
+   
+   # Frontend dependencies  
    cd ../client
    npm install
    ```
 
+
 ### Local Development Setup
 
 1. **Clone Repository**
-
    ```bash
    git clone https://github.com/JaYRaNa213/3W_task_2_Real_time_chat_system
-   cd chat-website-dir
+   cd 3w-chat-website
    ```
 
 2. **Backend Setup**
-
    ```bash
    cd server
    npm install
@@ -258,7 +254,6 @@ chat-website/
    ```
 
 3. **Frontend Setup** (New terminal)
-
    ```bash
    cd client
    npm install
@@ -275,50 +270,50 @@ chat-website/
 
 ### 🔐 Authentication Endpoints
 
-| Method | Endpoint             | Request Body                             | Response        | Description         |
-| ------ | -------------------- | ---------------------------------------- | --------------- | ------------------- |
-| `POST` | `/api/auth/register` | `{username, email, password}`            | `{token, user}` | Register new user   |
-| `POST` | `/api/auth/login`    | `{username, password}`                   | `{token, user}` | Login existing user |
-| `GET`  | `/api/auth/verify`   | Headers: `Authorization: Bearer <token>` | `{user}`        | Verify JWT token    |
+| Method | Endpoint | Request Body | Response | Description |
+|--------|----------|--------------|----------|-------------|
+| `POST` | `/api/auth/register` | `{username, email, password}` | `{token, user}` | Register new user |
+| `POST` | `/api/auth/login` | `{username, password}` | `{token, user}` | Login existing user |
+| `GET` | `/api/auth/verify` | Headers: `Authorization: Bearer <token>` | `{user}` | Verify JWT token |
 
 ### 🏠 Room Management
 
-| Method | Endpoint         | Headers                         | Response                               | Description               |
-| ------ | ---------------- | ------------------------------- | -------------------------------------- | ------------------------- |
-| `GET`  | `/api/rooms`     | `Authorization: Bearer <token>` | `[{id, name, description, userCount}]` | Get all available rooms   |
-| `POST` | `/api/rooms`     | `Authorization: Bearer <token>` | `{room}`                               | Create new room           |
-| `GET`  | `/api/rooms/:id` | `Authorization: Bearer <token>` | `{room, users}`                        | Get specific room details |
-| `PUT`  | `/api/rooms/:id` | `Authorization: Bearer <token>` | `{room}`                               | Update room information   |
+| Method | Endpoint | Headers | Response | Description |
+|--------|----------|---------|----------|-------------|
+| `GET` | `/api/rooms` | `Authorization: Bearer <token>` | `[{id, name, description, userCount}]` | Get all available rooms |
+| `POST` | `/api/rooms` | `Authorization: Bearer <token>` | `{room}` | Create new room |
+| `GET` | `/api/rooms/:id` | `Authorization: Bearer <token>` | `{room, users}` | Get specific room details |
+| `PUT` | `/api/rooms/:id` | `Authorization: Bearer <token>` | `{room}` | Update room information |
 
 ### 💬 Message Handling
 
-| Method   | Endpoint            | Query Parameters               | Response                                | Description                |
-| -------- | ------------------- | ------------------------------ | --------------------------------------- | -------------------------- |
-| `GET`    | `/api/messages`     | `roomId`, `page=1`, `limit=50` | `{messages[], totalPages, currentPage}` | Get paginated chat history |
-| `POST`   | `/api/messages`     | Body: `{roomId, message}`      | `{message}`                             | Send message to room       |
-| `DELETE` | `/api/messages/:id` | -                              | `{success}`                             | Delete specific message    |
+| Method | Endpoint | Query Parameters | Response | Description |
+|--------|----------|------------------|----------|-------------|
+| `GET` | `/api/messages` | `roomId`, `page=1`, `limit=50` | `{messages[], totalPages, currentPage}` | Get paginated chat history |
+| `POST` | `/api/messages` | Body: `{roomId, message}` | `{message}` | Send message to room |
+| `DELETE` | `/api/messages/:id` | - | `{success}` | Delete specific message |
 
 ### Example API Calls
 
 ```javascript
 // Register a new user
-const response = await fetch("/api/auth/register", {
-  method: "POST",
+const response = await fetch('/api/auth/register', {
+  method: 'POST',
   headers: {
-    "Content-Type": "application/json",
+    'Content-Type': 'application/json',
   },
   body: JSON.stringify({
-    username: "johndoe",
-    email: "john@example.com",
-    password: "securePassword123",
-  }),
+    username: 'johndoe',
+    email: 'john@example.com',
+    password: 'securePassword123'
+  })
 });
 
 // Get chat history
 const messages = await fetch(`/api/messages?roomId=${roomId}&page=1&limit=20`, {
   headers: {
-    Authorization: `Bearer ${token}`,
-  },
+    'Authorization': `Bearer ${token}`
+  }
 });
 ```
 
@@ -328,54 +323,54 @@ const messages = await fetch(`/api/messages?roomId=${roomId}&page=1&limit=20`, {
 
 ### Client → Server Events
 
-| Event         | Payload                                | Description                   |
-| ------------- | -------------------------------------- | ----------------------------- |
-| `joinRoom`    | `{username, room, token?}`             | Join a specific chat room     |
-| `leaveRoom`   | `{username, room}`                     | Leave current chat room       |
-| `chatMessage` | `{username, room, message, timestamp}` | Send message to room          |
-| `typing`      | `{username, room, isTyping: boolean}`  | Toggle typing indicator       |
-| `disconnect`  | -                                      | User disconnected from server |
+| Event | Payload | Description |
+|-------|---------|-------------|
+| `joinRoom` | `{username, room, token?}` | Join a specific chat room |
+| `leaveRoom` | `{username, room}` | Leave current chat room |
+| `chatMessage` | `{username, room, message, timestamp}` | Send message to room |
+| `typing` | `{username, room, isTyping: boolean}` | Toggle typing indicator |
+| `disconnect` | - | User disconnected from server |
 
 ### Server → Client Events
 
-| Event         | Payload                                    | Description                          |
-| ------------- | ------------------------------------------ | ------------------------------------ |
-| `roomJoined`  | `{room, users[], message}`                 | Confirmation of successful room join |
-| `newMessage`  | `{id, username, message, timestamp, room}` | New message broadcasted to room      |
-| `userJoined`  | `{username, room, timestamp}`              | New user joined the room             |
-| `userLeft`    | `{username, room, timestamp}`              | User left the room                   |
-| `onlineUsers` | `{room, users[], count}`                   | Updated list of online users         |
-| `typing`      | `{username, room, isTyping}`               | Typing indicator update              |
-| `error`       | `{type, message, details}`                 | Error notifications                  |
+| Event | Payload | Description |
+|-------|---------|-------------|
+| `roomJoined` | `{room, users[], message}` | Confirmation of successful room join |
+| `newMessage` | `{id, username, message, timestamp, room}` | New message broadcasted to room |
+| `userJoined` | `{username, room, timestamp}` | New user joined the room |
+| `userLeft` | `{username, room, timestamp}` | User left the room |
+| `onlineUsers` | `{room, users[], count}` | Updated list of online users |
+| `typing` | `{username, room, isTyping}` | Typing indicator update |
+| `error` | `{type, message, details}` | Error notifications |
 
 ### Socket.io Implementation Example
 
 ```javascript
 // Client-side Socket.io usage
-import io from "socket.io-client";
+import io from 'socket.io-client';
 
-const socket = io("ws://localhost:5000");
+const socket = io('ws://localhost:5000');
 
 // Join a room
-socket.emit("joinRoom", {
-  username: "JohnDoe",
-  room: "general",
-  token: localStorage.getItem("token"),
+socket.emit('joinRoom', {
+  username: 'JohnDoe',
+  room: 'general',
+  token: localStorage.getItem('token')
 });
 
 // Listen for new messages
-socket.on("newMessage", (data) => {
-  console.log("New message:", data);
-  setMessages((prev) => [...prev, data]);
+socket.on('newMessage', (data) => {
+  console.log('New message:', data);
+  setMessages(prev => [...prev, data]);
 });
 
 // Send a message
 const sendMessage = (message) => {
-  socket.emit("chatMessage", {
+  socket.emit('chatMessage', {
     username: user.username,
     room: currentRoom,
     message: message,
-    timestamp: new Date().toISOString(),
+    timestamp: new Date().toISOString()
   });
 };
 ```
@@ -390,19 +385,19 @@ graph TD
     B -->|Login| C[Login Form]
     B -->|Register| D[Register Form]
     B -->|Guest| E[Guest Setup]
-
+    
     C --> F{Auth Success?}
     D --> F
     E --> G[Chat Interface]
-
+    
     F -->|Yes| G
     F -->|No| H[Error Message]
     H --> B
-
+    
     G --> I[Room Selection]
     I --> J[Join Room]
     J --> K[Chat Features]
-
+    
     K --> L[Send Messages]
     K --> M[View Online Users]
     K --> N[Typing Indicators]
@@ -472,7 +467,7 @@ REACT_APP_API_URL=localhost:5000
 REACT_APP_SOCKET_URL=localhost:5000
 
 # App Metadata
-REACT_APP_NAME= Real-Time Chat
+REACT_APP_NAME=3W Real-Time Chat
 REACT_APP_VERSION=1.0.0
 REACT_APP_DESCRIPTION=Modern real-time chat application
 
@@ -489,7 +484,6 @@ REACT_APP_MAX_MESSAGE_LENGTH=500
 ### Manual Testing Checklist
 
 #### Authentication Testing
-
 - [ ] User registration with valid credentials
 - [ ] User registration with invalid/duplicate credentials
 - [ ] User login with correct credentials
@@ -498,7 +492,6 @@ REACT_APP_MAX_MESSAGE_LENGTH=500
 - [ ] Password hashing verification
 
 #### Chat Functionality
-
 - [ ] Real-time message sending and receiving
 - [ ] Multiple users in the same room
 - [ ] Room switching without message loss
@@ -507,14 +500,12 @@ REACT_APP_MAX_MESSAGE_LENGTH=500
 - [ ] Online users list updates in real-time
 
 #### Guest Mode Testing
-
 - [ ] Guest user can join rooms
 - [ ] Guest user can send/receive messages
 - [ ] Guest user limitations work correctly
 - [ ] Guest to registered user upgrade flow
 
 #### UI/UX Testing
-
 - [ ] Responsive design on mobile devices
 - [ ] Dark/light theme switching (if implemented)
 - [ ] Accessibility features
@@ -540,21 +531,21 @@ cd server && npm test
 
 ```javascript
 // Example load test with Socket.io
-const io = require("socket.io-client");
+const io = require('socket.io-client');
 
 const createUser = (userId) => {
-  const socket = io("http://localhost:5000");
-
-  socket.emit("joinRoom", {
+  const socket = io('http://localhost:5000');
+  
+  socket.emit('joinRoom', {
     username: `User${userId}`,
-    room: "general",
+    room: 'general'
   });
-
+  
   setInterval(() => {
-    socket.emit("chatMessage", {
+    socket.emit('chatMessage', {
       username: `User${userId}`,
-      room: "general",
-      message: `Hello from User${userId}!`,
+      room: 'general',
+      message: `Hello from User${userId}!`
     });
   }, 2000);
 };
@@ -572,7 +563,6 @@ for (let i = 1; i <= 50; i++) {
 ### Deployment on Vercel And Render
 
 1. **Prepare for Production**
-
    ```bash
    # Set production environment
    NODE_ENV=production
@@ -589,6 +579,7 @@ for (let i = 1; i <= 50; i++) {
      }
    }
    ```
+
 
 ```
 
@@ -638,7 +629,6 @@ Please read our [Code of Conduct](CODE_OF_CONDUCT.md) before contributing.
 This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
 
 ```
-
 MIT License
 
 Copyright (c) 2024 Jay Rana
@@ -652,7 +642,6 @@ furnished to do so, subject to the following conditions:
 
 The above copyright notice and this permission notice shall be included in all
 copies or substantial portions of the Software.
-
 ```
 
 ---
@@ -741,4 +730,3 @@ Special thanks to the amazing open-source community and these fantastic tools:
 
 
 
-```
