@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import {
-  Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Box, Typography, IconButton, useTheme
+  Button, Dialog, DialogContent, DialogActions, TextField, Box, Typography, IconButton, useTheme
 } from "@mui/material";
 import { X, Hash, Plus } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";

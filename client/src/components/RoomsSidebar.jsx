@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Typography, Badge, styled } from "@mui/material";
+import { Box, Typography, styled } from "@mui/material";
 import { Hash } from "lucide-react";
 import { motion } from "framer-motion";
 
