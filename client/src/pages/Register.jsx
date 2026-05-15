@@ -65,7 +65,7 @@ const Register = () => {
             <Box sx={{ width: 32, height: 32, borderRadius: '10px', background: 'linear-gradient(135deg, #7E57C2 0%, #00E5FF 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <MessageSquare size={18} color="#fff" />
             </Box>
-            <Typography variant="h6" fontWeight="800">Nexus</Typography>
+            <Typography variant="h6" fontWeight="800">RT Chat</Typography>
           </Box>
 
           <Typography variant="h3" fontWeight="800" sx={{ mb: 1 }}>Create an account</Typography>

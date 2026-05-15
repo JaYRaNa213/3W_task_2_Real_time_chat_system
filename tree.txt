@@ -1,5 +1,5 @@
 ├── .gitignore
-├── 3W Chat.apk
+├──  Chat.apk
 ├── client
 │   ├── .env
 │   ├── .gitignore

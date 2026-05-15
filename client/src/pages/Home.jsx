@@ -6,7 +6,6 @@ import { AuthContext } from "../context/AuthContext";
 import { MessageSquare, Zap, Users, Shield, ArrowRight } from "lucide-react";
 
 const MotionBox = motion.create(Box);
-const MotionTypography = motion.create(Typography);
 
 const FeatureCard = ({ icon: Icon, title, desc, delay }) => (
   <MotionBox

@@ -1,12 +1,12 @@
 import React, { useEffect, useState, useContext } from "react";
 import {
-  Box, Typography, Button, IconButton, Avatar,
-  LinearProgress, useTheme, alpha, useMediaQuery,
-  Menu, MenuItem, Tooltip
+  Box, Typography, IconButton, Avatar,
+  LinearProgress, useTheme, useMediaQuery,
+  Menu, MenuItem
 } from "@mui/material";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Hash, LogOut, Settings, Plus, Menu as MenuIcon, Zap } from "lucide-react";
+import { Hash, LogOut, Settings, Menu as MenuIcon, Zap } from "lucide-react";
 import RoomsSidebar from "../components/RoomsSidebar";
 import ChatRoom from "../components/ChatRoom/ChatRoom";
 import CreateRoomDialog from "../components/CreateRoomButton";
@@ -25,8 +25,6 @@ const Chat = () => {
 
   const [room, setRoom] = useState(null);
   const [recentRooms, setRecentRooms] = useState([]);
-  const [activeRooms, setActiveRooms] = useState({});
-  const [unread, setUnread] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   
@@ -61,7 +59,6 @@ const Chat = () => {
       const updated = [roomName, ...prev.filter((r) => r !== roomName)];
       return updated;
     });
-    setUnread((prev) => ({ ...prev, [roomName]: 0 }));
     if (isMobile) setSidebarOpen(false);
   };
 
@@ -150,7 +147,7 @@ const Chat = () => {
             <IconButton onClick={() => setSidebarOpen(true)} sx={{ mr: 1, color: "text.primary" }}>
               <MenuIcon />
             </IconButton>
-            <Typography variant="h6" fontWeight="700">Nexus Chat</Typography>
+            <Typography variant="h6" fontWeight="700">RT Chat</Typography>
           </Box>
         )}
 
