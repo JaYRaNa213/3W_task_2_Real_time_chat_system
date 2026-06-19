@@ -377,18 +377,15 @@ const Chat = () => {
 
   useEffect(() => {
     if (isMobile) {
-      if (!activeConversation && !legacyRoom) setSidebarOpen(true);
-      else setSidebarOpen(false);
+      if (activeConversation || legacyRoom) {
+        setSidebarOpen(false);
+      } else {
+        setSidebarOpen(true);
+      }
     } else {
       setSidebarOpen(true);
     }
-  }, [isMobile]);
-
-  useEffect(() => {
-    if (isMobile && activeConversation) {
-      setSidebarOpen(false);
-    }
-  }, [activeConversation, isMobile]);
+  }, [isMobile, activeConversation, legacyRoom]);
 
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 900);
