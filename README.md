@@ -41,7 +41,7 @@ _Featuring user authentication, multiple chat rooms, message history, online use
 
 ** Real-Time Chat** is a modern, full-featured chat application that provides seamless real-time communication experience. Built with cutting-edge technologies, it offers both authenticated user experience and guest access functionality.
 
-<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/0b7ce567-2810-4593-b9ac-ec1af393511e" />
+<img width="1914" height="876" alt="image" src="https://github.com/user-attachments/assets/722363e6-0564-4637-a888-cdd23767b2f4" />
 
 ### Key Capabilities
 
