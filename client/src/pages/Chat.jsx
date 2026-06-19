@@ -375,7 +375,21 @@ const Chat = () => {
 
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
-  useEffect(() => { if (isMobile) setSidebarOpen(false); }, [isMobile]);
+  useEffect(() => {
+    if (isMobile) {
+      if (!activeConversation && !legacyRoom) setSidebarOpen(true);
+      else setSidebarOpen(false);
+    } else {
+      setSidebarOpen(true);
+    }
+  }, [isMobile]);
+
+  useEffect(() => {
+    if (isMobile && activeConversation) {
+      setSidebarOpen(false);
+    }
+  }, [activeConversation, isMobile]);
+
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 900);
     return () => clearTimeout(timer);
