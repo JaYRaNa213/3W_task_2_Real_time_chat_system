@@ -11,6 +11,10 @@ import createSocketServer from "./socket.js";
 import roomsRouter from "./routes/rooms.route.js";
 import messagesRouter from "./routes/messages.route.js";
 import authRouter from "./routes/auth.route.js";
+// NEW routes
+import conversationsRouter from "./routes/conversations.route.js";
+import invitationsRouter from "./routes/invitations.route.js";
+import usersRouter from "./routes/users.route.js";
 
 dotenv.config();
 
@@ -74,6 +78,10 @@ app.get("/", (_req, res) => res.json({ ok: true, service: "chat-server" }));
 app.use("/api/rooms", roomsRouter);
 app.use("/api/messages", messagesRouter);
 app.use("/api/auth", authRouter);
+// NEW routes
+app.use("/api/conversations", conversationsRouter);
+app.use("/api/invitations", invitationsRouter);
+app.use("/api/users", usersRouter);
 
 const server = http.createServer(app);
 

@@ -6,3 +6,15 @@ export const fetchMessagesByRoom = async (roomName) => {
   const { data } = await http.get(`/api/messages/${encodeURIComponent(roomName)}`);
   return data;
 };
+
+export const editMessage = (token, messageId, content) =>
+  http.patch(
+    `/api/messages/${messageId}`,
+    { content },
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+
+export const deleteMessage = (token, messageId) =>
+  http.delete(`/api/messages/${messageId}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
