@@ -16,7 +16,16 @@ const router = express.Router();
 router.get("/search", authMiddleware, async (req, res) => {
   try {
     const { q = "" } = req.query;
-    if (!q.trim()) return res.json([]);
+
+    if (!q.trim()) {
+      // Return all users if query is empty
+      const allUsers = await User.find({ _id: { $ne: req.user.id } })
+        .select("username avatar lastSeen")
+        .sort({ lastSeen: -1 })
+        .limit(50)
+        .lean();
+      return res.json(allUsers);
+    }
 
     // Sanitize: escape regex special chars
     const escaped = q.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
