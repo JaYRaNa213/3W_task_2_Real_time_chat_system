@@ -1,20 +1,15 @@
 // client/src/components/DirectMessages/NewChatModal.jsx
 // Modal to search for a user and start a new DM conversation
 
-import React, { useState, useContext } from "react";
+import React from "react";
 import {
   Dialog, DialogTitle, DialogContent, DialogActions,
-  Button, Typography, Box, CircularProgress,
+  Button, Typography,
 } from "@mui/material";
 import { MessageCirclePlus } from "lucide-react";
 import SearchBar from "../Shared/SearchBar";
-import { AuthContext } from "../../context/AuthContext";
-import { ConversationContext } from "../../context/ConversationContext";
 
 export default function NewChatModal({ open, onClose }) {
-  const { user } = useContext(AuthContext);
-  const { conversations } = useContext(ConversationContext);
-
   return (
     <Dialog
       open={open}

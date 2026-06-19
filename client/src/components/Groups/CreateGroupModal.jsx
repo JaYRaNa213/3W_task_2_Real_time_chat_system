@@ -4,13 +4,12 @@
 import React, { useState, useContext } from "react";
 import {
   Dialog, DialogTitle, DialogContent, DialogActions,
-  TextField, Button, Typography, Box, Chip,
+  TextField, Button, Typography,
 } from "@mui/material";
 import { Users } from "lucide-react";
 import { AuthContext } from "../../context/AuthContext";
 import { ConversationContext } from "../../context/ConversationContext";
 import { createGroup } from "../../api/conversations";
-import SearchBar from "../Shared/SearchBar";
 
 export default function CreateGroupModal({ open, onClose }) {
   const { user } = useContext(AuthContext);

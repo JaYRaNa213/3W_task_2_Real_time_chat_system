@@ -1,7 +1,7 @@
 // client/src/components/Shared/SearchBar.jsx
 // Reusable debounced search input with results dropdown
 
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   Box, InputBase, Paper, Typography, Avatar,
   IconButton, CircularProgress, Tooltip,

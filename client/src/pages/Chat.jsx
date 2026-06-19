@@ -53,7 +53,7 @@ function ConversationWindow({ onBack }) {
     activeConversation, messages, typingUsers,
     sendMessage, emitTyping, openConversation,
   } = useContext(ConversationContext);
-  const socket = useContext(SocketContext);
+  
   const scrollRef = useRef(null);
   const [input, setInput] = useState("");
   const [rightOpen, setRightOpen] = useState(!isMobile);
