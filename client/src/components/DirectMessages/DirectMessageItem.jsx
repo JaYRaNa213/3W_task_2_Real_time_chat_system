@@ -2,7 +2,7 @@
 // Single DM list item with avatar, name, last message, unread badge, and online dot
 
 import React, { useContext } from "react";
-import { Box, Avatar, Typography, Badge } from "@mui/material";
+import { Box, Avatar, Typography } from "@mui/material";
 import { motion } from "framer-motion";
 import { AuthContext } from "../../context/AuthContext";
 import { ConversationContext } from "../../context/ConversationContext";
@@ -120,3 +120,5 @@ export default function DirectMessageItem({ conversation, active, onClick }) {
     </MotionBox>
   );
 }
+
+// Cache invalidation comment

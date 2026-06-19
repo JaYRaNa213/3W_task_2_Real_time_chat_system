@@ -109,3 +109,5 @@ export default function CreateGroupModal({ open, onClose }) {
     </Dialog>
   );
 }
+
+// Cache invalidation comment

@@ -198,3 +198,5 @@ export default function SearchBar({ placeholder = "Search users..." }) {
     </Box>
   );
 }
+
+// Cache invalidation comment

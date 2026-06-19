@@ -2,8 +2,8 @@
 // Lists public community channels the user can join and browse
 
 import React, { useState, useEffect, useContext } from "react";
-import { Box, Typography, IconButton, Tooltip, Avatar, Button } from "@mui/material";
-import { Hash, Plus } from "lucide-react";
+import { Box, Typography, Button } from "@mui/material";
+import { Hash } from "lucide-react";
 import { motion } from "framer-motion";
 import { AuthContext } from "../../context/AuthContext";
 import { ConversationContext } from "../../context/ConversationContext";
